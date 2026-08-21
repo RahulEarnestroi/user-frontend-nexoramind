@@ -168,45 +168,7 @@ export default function LandingPage() {
                 ))}
               </motion.div>
             </motion.div>
-
-            {/* Right: Premium Certificate Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 80, scale: 0.92, rotateY: 8 }}
-              animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
-              transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden lg:flex justify-center items-center"
-            >
-              <div className="relative">
-                {/* Glow behind card */}
-                <div className="absolute -inset-12 bg-gradient-to-br from-[#c026d3]/12 to-[#7028C0]/8 rounded-[2rem] blur-3xl" />
-
-                {/* Floating notification */}
-               
-
-                {/* Floating stats badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: -20, x: 20 }}
-                  animate={{ opacity: 1, y: 0, x: 0 }}
-                  transition={{ delay: 1.5, duration: 0.6 }}
-                  className="absolute -right-6 top-4 z-20 flex items-center gap-2.5 px-4 py-3 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl"
-                >
-                  <div className="flex -space-x-1.5">
-                    {['bg-[#c026d3]', 'bg-[#7028C0]', 'bg-[#0080F8]'].map((bg, i) => (
-                      <div key={i} className={`w-6 h-6 ${bg} rounded-full border-2 border-white flex items-center justify-center`}>
-                        <span className="text-[8px] text-white font-bold">{['A', 'B', 'C'][i]}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <p className="text-slate-800 text-xs font-semibold">986+ Students</p>
-                    <p className="text-slate-400 text-[10px]">Certified this year</p>
-                  </div>
-                </motion.div>
-
-                {/* Certificate card */}
-                <PremiumCertificate />
-              </div>
-            </motion.div>
+         
           </div>
         </div>
 
