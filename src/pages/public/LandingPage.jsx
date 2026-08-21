@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import {
-  Award, Shield, CheckCircle, ArrowRight, QrCode, Users, Globe,
+  Award, Shield, ArrowRight, QrCode, Users, Globe,
   ChevronRight, Briefcase, Code, Cpu, Palette, Database, Cloud,
   Zap, Lock, Sparkles, ArrowUpRight, TrendingUp, Target
 } from 'lucide-react';
-import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import PremiumCertificate from '../../components/ui/PremiumCertificate';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -169,114 +169,42 @@ export default function LandingPage() {
               </motion.div>
             </motion.div>
 
-            {/* Right: Certificate Card */}
+            {/* Right: Premium Certificate Card */}
             <motion.div
               initial={{ opacity: 0, x: 80, scale: 0.92, rotateY: 8 }}
               animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden lg:block"
+              className="hidden lg:flex justify-center items-center"
             >
-              <div className="relative perspective-[1200px]">
+              <div className="relative">
                 {/* Glow behind card */}
-                <div className="absolute -inset-12 bg-gradient-to-br from-[#0080F8]/15 to-[#7028C0]/10 rounded-[2rem] blur-3xl" />
-
-                {/* Animated border wrapper */}
-                <div className="relative p-[1px] rounded-[1.5rem] bg-gradient-to-br from-[#0080F8]/40 via-[#7028C0]/30 to-[#0080F8]/20 backdrop-blur-xl">
-                  {/* Inner card */}
-                  <div className="relative bg-[#0a0a2e]/80 backdrop-blur-2xl rounded-[1.4rem] p-7 overflow-hidden">
-                    {/* Card inner glow */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-24 bg-[#0080F8]/8 rounded-full blur-3xl" />
-
-                    {/* Header */}
-                    <div className="relative flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-gradient-to-br from-[#0080F8] to-[#7028C0] rounded-xl flex items-center justify-center shadow-lg shadow-[#0080F8]/20">
-                          <Award className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-[11px] text-white/30 uppercase tracking-wider font-medium">NexoraMind Tech</p>
-                          <p className="text-white text-sm font-semibold">Certificate of Achievement</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
-                        <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400 text-xs font-semibold">Verified</span>
-                      </div>
-                    </div>
-
-                    {/* Certificate body */}
-                    <div className="relative border border-dashed border-white/[0.08] rounded-xl p-7 text-center mb-5 bg-white/[0.02]">
-                      <p className="text-[11px] text-white/30 uppercase tracking-wider mb-2">This certifies that</p>
-                      <p className="text-2xl font-bold text-white mb-2">John Doe</p>
-                      <div className="w-12 h-[2px] mx-auto bg-gradient-to-r from-[#0080F8] to-[#7028C0] rounded-full mb-2" />
-                      <p className="text-[11px] text-white/30 mb-1.5">has successfully completed</p>
-                      <p className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#59a3ff] to-[#0080F8]">
-                        React.js Professional Certification
-                      </p>
-                    </div>
-
-                    {/* Footer info */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white/[0.04] rounded-xl flex items-center justify-center border border-white/[0.06]">
-                          <QrCode className="w-5 h-5 text-white/30" />
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-white/20 uppercase tracking-wider">Certificate ID</p>
-                          <p className="text-xs text-white/60 font-mono font-medium">NM-2026-000184</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] text-white/20 uppercase tracking-wider">Score</p>
-                        <p className="text-sm font-bold text-white/80">92%</p>
-                      </div>
-                    </div>
-
-                    {/* Animated gradient border accent */}
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                      className="absolute -top-24 -right-24 w-48 h-48 opacity-30"
-                      style={{ background: 'conic-gradient(from 0deg, transparent, #0080F8, transparent, #7028C0, transparent)' }}
-                    />
-                  </div>
-                </div>
+                <div className="absolute -inset-12 bg-gradient-to-br from-[#c026d3]/12 to-[#7028C0]/8 rounded-[2rem] blur-3xl" />
 
                 {/* Floating notification */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20, x: -20 }}
-                  animate={{ opacity: 1, y: 0, x: 0 }}
-                  transition={{ delay: 1.2, duration: 0.6 }}
-                  className="absolute -left-6 bottom-16 flex items-center gap-3 px-4 py-3 bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] rounded-2xl shadow-2xl"
-                >
-                  <div className="w-9 h-9 bg-gradient-to-br from-[#0080F8] to-[#7028C0] rounded-xl flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-white text-xs font-semibold">Certificate Issued</p>
-                    <p className="text-white/40 text-[10px]">Just now · Score: 92%</p>
-                  </div>
-                </motion.div>
+               
 
                 {/* Floating stats badge */}
                 <motion.div
                   initial={{ opacity: 0, y: -20, x: 20 }}
                   animate={{ opacity: 1, y: 0, x: 0 }}
                   transition={{ delay: 1.5, duration: 0.6 }}
-                  className="absolute -right-4 top-8 flex items-center gap-2.5 px-4 py-3 bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] rounded-2xl shadow-2xl"
+                  className="absolute -right-6 top-4 z-20 flex items-center gap-2.5 px-4 py-3 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl"
                 >
                   <div className="flex -space-x-1.5">
-                    {['bg-[#0080F8]', 'bg-[#7028C0]', 'bg-emerald-500'].map((bg, i) => (
-                      <div key={i} className={`w-6 h-6 ${bg} rounded-full border-2 border-[#0a0a2e] flex items-center justify-center`}>
+                    {['bg-[#c026d3]', 'bg-[#7028C0]', 'bg-[#0080F8]'].map((bg, i) => (
+                      <div key={i} className={`w-6 h-6 ${bg} rounded-full border-2 border-white flex items-center justify-center`}>
                         <span className="text-[8px] text-white font-bold">{['A', 'B', 'C'][i]}</span>
                       </div>
                     ))}
                   </div>
                   <div>
-                    <p className="text-white text-xs font-semibold">986+ Students</p>
-                    <p className="text-white/40 text-[10px]">Certified this year</p>
+                    <p className="text-slate-800 text-xs font-semibold">986+ Students</p>
+                    <p className="text-slate-400 text-[10px]">Certified this year</p>
                   </div>
                 </motion.div>
+
+                {/* Certificate card */}
+                <PremiumCertificate />
               </div>
             </motion.div>
           </div>
