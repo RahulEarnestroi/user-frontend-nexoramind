@@ -143,47 +143,88 @@ export default function Navbar() {
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${
         mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
       }`}>
-        <div className="px-4 pb-4 bg-black backdrop-blur-2xl border-t border-slate-100">
-          <div className="pt-3 space-y-1">
-            {navLinks.map(link => (
-              <Link
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  location.pathname === link.to
-                    ? 'text-white bg-primary-400'
-                    : 'text-white hover:bg-slate-50'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-3 mt-2 border-t border-slate-100 space-y-2">
-              {user ? (
-                <>
-                  <Link
-                    to={user.role === 'ADMIN' || user.role === 'ISSUER' ? '/admin/dashboard' : '/student/dashboard'}
-                    onClick={() => setMobileOpen(false)}
-                    className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    Dashboard
-                  </Link>
-                  <button onClick={() => { logout(); setMobileOpen(false); }} className="block w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50">
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl bg-primary-600 text-sm font-medium text-white hover:bg-slate-50">Login</Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-semibold text-white bg-secondary-900 text-center shadow-lg shadow-[#0080F8]/20">
-                    Get Certified
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
+        <div className="px-3 pb-4 bg-black/95 backdrop-blur-2xl border-t border-white/10">
+  <div className="pt-3 space-y-1.5">
+
+    {/* Navigation */}
+    {navLinks.map((link) => {
+      const isActive = location.pathname === link.to
+
+      return (
+        <Link
+          key={link.to}
+          to={link.to}
+          onClick={() => setMobileOpen(false)}
+          className={`group flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+            isActive
+              ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20'
+              : 'text-slate-300 hover:bg-white/[0.06] hover:text-white'
+          }`}
+        >
+          <span>{link.label}</span>
+
+          {isActive && (
+            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+          )}
+        </Link>
+      )
+    })}
+
+    {/* Account Section */}
+    <div className="mt-4 pt-4 border-t border-white/10">
+      {user ? (
+        <div className="space-y-1.5">
+          <Link
+            to={
+              user.role === 'ADMIN' || user.role === 'ISSUER'
+                ? '/admin/dashboard'
+                : '/student/dashboard'
+            }
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/[0.06] hover:text-white transition-all"
+          >
+            <span>Dashboard</span>
+            <span className="text-xs text-slate-500">→</span>
+          </Link>
+
+          <button
+            onClick={() => {
+              logout()
+              setMobileOpen(false)
+            }}
+            className="w-full flex items-center px-4 py-3.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all"
+          >
+            Logout
+          </button>
         </div>
+      ) : (
+        <div className="space-y-2.5">
+          {/* Login */}
+          <Link
+            to="/login"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center justify-center w-full px-4 py-3.5 rounded-xl text-sm font-semibold text-white bg-white/[0.06] border border-white/10 hover:bg-white/[0.1] transition-all"
+          >
+            Login
+          </Link>
+
+          {/* Primary CTA */}
+          <Link
+            to="/register"
+            onClick={() => setMobileOpen(false)}
+            className="relative flex items-center justify-center w-full px-4 py-3.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-secondary-900 hover:opacity-95 transition-all shadow-lg shadow-[#0080F8]/20 overflow-hidden"
+          >
+            <span className="relative z-10">
+              Get Certified
+            </span>
+
+            <span className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
+          </Link>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
       </div>
     </nav>
   );
