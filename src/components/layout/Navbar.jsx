@@ -68,7 +68,7 @@ export default function Navbar() {
                     className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                       isActive
                         ? isTransparent
-                          ? 'text-white bg-white/[0.15]'
+                          ? 'text-white bg-secondary-800'
                           : 'text-[#0080F8] bg-[#0080F8]/10'
                         : isTransparent
                           ? 'text-white/60 hover:text-white hover:bg-white/[0.08]'

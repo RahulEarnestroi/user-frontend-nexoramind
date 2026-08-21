@@ -374,7 +374,7 @@ export default function LandingPage() {
 
       {/* ============ CTA ============ */}
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-primary-900" />
+        <div className="absolute inset-0 bg-black" />
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#7028C0]/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#0080F8]/8 rounded-full blur-[120px]" />
