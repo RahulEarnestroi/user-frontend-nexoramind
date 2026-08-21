@@ -143,7 +143,7 @@ export default function Navbar() {
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${
         mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
       }`}>
-        <div className="px-4 pb-4 bg-white/95 backdrop-blur-2xl border-t border-slate-100">
+        <div className="px-4 pb-4 bg-black backdrop-blur-2xl border-t border-slate-100">
           <div className="pt-3 space-y-1">
             {navLinks.map(link => (
               <Link
@@ -152,8 +152,8 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   location.pathname === link.to
-                    ? 'text-[#0080F8] bg-[#0080F8]/10'
-                    : 'text-slate-600 hover:bg-slate-50'
+                    ? 'text-white bg-primary-400'
+                    : 'text-white hover:bg-slate-50'
                 }`}
               >
                 {link.label}
@@ -175,8 +175,8 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50">Login</Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-[#0080F8] to-[#7028C0] text-center shadow-lg shadow-[#0080F8]/20">
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl bg-primary-600 text-sm font-medium text-white hover:bg-slate-50">Login</Link>
+                  <Link to="/register" onClick={() => setMobileOpen(false)} className="block px-4 py-3 rounded-xl text-sm font-semibold text-white bg-secondary-900 text-center shadow-lg shadow-[#0080F8]/20">
                     Get Certified
                   </Link>
                 </>
