@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  ::selection {
+    background-color: rgba(0, 128, 248, 0.2);
+    color: #080860;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #0080F8 0%, #7028C0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-vivid {
+    background: linear-gradient(135deg, #59a3ff 0%, #0080F8 30%, #7028C0 70%, #5b18a8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #0080F8, #5b18a8);
+  }
+
+  .bg-gradient-hero {
+    background: linear-gradient(160deg, #040430 0%, #080860 40%, #1a0a33 100%);
+  }
+
+  .bg-gradient-subtle {
+    background: linear-gradient(180deg, #f0f0ff 0%, #f8f9ff 100%);
+  }
+
+  .bg-gradient-card {
+    background: linear-gradient(135deg, #eef6ff 0%, #f5f0ff 100%);
+  }
+
+  .bg-mesh {
+    background-image:
+      radial-gradient(at 20% 20%, rgba(0,128,248,0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(112,40,192,0.06) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(8,8,96,0.04) 0px, transparent 50%);
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(0,128,248,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,128,248,0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .card-shadow {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .card-shadow-glow {
+    box-shadow: 0 10px 40px rgba(0,128,248,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .glass {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .glass-dark {
+    background: rgba(8,8,96,0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .hero-glow {
+    position: relative;
+  }
+  .hero-glow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,128,248,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .border-glow {
+    border: 1px solid rgba(0,128,248,0.2);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(112,40,192,0.3) transparent;
+  }
+}
