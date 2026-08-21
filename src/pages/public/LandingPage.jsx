@@ -434,7 +434,7 @@ export default function LandingPage() {
                 className="text-center relative"
               >
                 <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#0080F8] to-[#7028C0] rounded-2xl flex items-center justify-center mb-4 relative z-10 shadow-lg shadow-[#0080F8]/20">
-                  <span className="text-white font-bold text-xl">{item.step}</span>
+                  <span className=" font-bold text-xl">{item.step}</span>
                 </div>
                 <h3 className="font-bold text-slate-900 mb-1">{item.title}</h3>
                 <p className="text-sm text-slate-500">{item.desc}</p>
@@ -446,7 +446,7 @@ export default function LandingPage() {
 
       {/* ============ CTA ============ */}
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#020214] via-[#080860] to-[#1a0a33]" />
+        <div className="absolute inset-0 bg-primary-900" />
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#7028C0]/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#0080F8]/8 rounded-full blur-[120px]" />
@@ -455,7 +455,7 @@ export default function LandingPage() {
           <Section>
             <h2 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight">
               Ready to Get
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#59a3ff] via-[#0080F8] to-[#7028C0]"> Certified</span>?
+              <span className="text-transparent bg-clip-text bg-white"> Certified</span>?
             </h2>
             <p className="mt-6 text-lg text-white/40 max-w-xl mx-auto">
               Join hundreds of developers who have earned their certification through NexoraMind Tech.
@@ -464,7 +464,7 @@ export default function LandingPage() {
               <Link to="/certifications">
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-[#0080F8] to-[#7028C0] rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition duration-400" />
-                  <div className="relative flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[#0080F8] to-[#0066d1] text-white text-base font-semibold rounded-2xl hover:shadow-[0_0_40px_rgba(0,128,248,0.3)] transition-all duration-300 cursor-pointer">
+                  <div className="relative flex items-center gap-2.5 px-8 py-4 bg-secondary-900 text-white text-base font-semibold rounded-2xl hover:shadow-[0_0_40px_rgba(0,128,248,0.3)] transition-all duration-300 cursor-pointer">
                     Explore Certifications
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>

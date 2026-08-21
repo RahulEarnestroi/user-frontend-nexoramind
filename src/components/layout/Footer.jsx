@@ -67,9 +67,7 @@ export default function Footer() {
           <p className="text-slate-500 text-sm">
             &copy; {new Date().getFullYear()} NexoraMind Tech. All rights reserved.
           </p>
-          <p className="text-slate-600 text-xs">
-            Built for builders who ship fast.
-          </p>
+         
         </div>
       </div>
     </footer>
