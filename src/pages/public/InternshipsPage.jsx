@@ -1,11 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, Clock, MapPin, ChevronRight, Building2, Download, FileText } from 'lucide-react';
 import { internships } from '../../data/mockData';
+import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 
 export default function InternshipsPage() {
+  const { isAuthenticated } = useAuth();
+  const { meStatus } = useProfile();
+  const navigate = useNavigate();
+
+  const handleGetInternship = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="py-20 bg-white dark:bg-black min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,34 +48,58 @@ export default function InternshipsPage() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-white/30 mb-4">
                   <div className="flex items-center gap-1"><Clock className="w-4 h-4" /> {internship.duration}</div>
                   <div className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {internship.location}</div>
-                  {/* <div className="flex items-center gap-1"><DollarSign className="w-4 h-4" /> {internship.stipend}</div> */}
                 </div>
                 <div className="flex flex-wrap gap-1.5 mb-5">
                   {internship.requirements.map(req => (
                     <span key={req} className="px-2 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 rounded-md text-xs font-medium border border-slate-200 dark:border-white/[0.06]">{req}</span>
                   ))}
                 </div>
+
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2">
-                  <Link to={`/internships/${internship.id}`}>
-                    <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
-                      View Tasks <ChevronRight className="w-4 h-4" />
+                  {/* Not logged in → show Get Internship → redirect to /login */}
+                  {!isAuthenticated && (
+                    <button
+                      onClick={handleGetInternship}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all"
+                    >
+                      Get Internship <ChevronRight className="w-4 h-4" />
                     </button>
-                  </Link>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Link to={`/certificates-list`}>
-                      <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
-                        <Download className="w-3.5 h-3.5" /> Certificate
-                      </button>
-                    </Link>
-                    <Link to={`/offer-letters`}>
-                      <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
-                        <FileText className="w-3.5 h-3.5" /> Offer Letter
-                      </button>
-                    </Link>
-                  </div>
-                </div>
+                  )}
 
+                  {/* Logged in + meStatus is true → show View Tasks, Certificate, Offer Letter */}
+                  {isAuthenticated && meStatus === true && (
+                    <>
+                      <Link to={`/internships/${internship.id}`}>
+                        <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
+                          View Tasks <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </Link>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link to={`/certificates-list`}>
+                          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
+                            <Download className="w-3.5 h-3.5" /> Certificate
+                          </button>
+                        </Link>
+                        <Link to={`/offer-letters`}>
+                          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
+                            <FileText className="w-3.5 h-3.5" /> Offer Letter
+                          </button>
+                        </Link>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Logged in + meStatus is false → show Get Internship */}
+                  {isAuthenticated && meStatus === false && (
+                    <button
+                      onClick={handleGetInternship}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all"
+                    >
+                      Get Internship <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </Card>
             </motion.div>
           ))}
