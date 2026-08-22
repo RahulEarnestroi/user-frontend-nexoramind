@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight, ChevronDown, Shield, Award, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
 import { useTheme } from '../../context/ThemeContext';
 import Logo from '../../assets/Logo.png';
 
@@ -74,6 +75,7 @@ export default function Navbar() {
   const [expandedMobile, setExpandedMobile] = useState(null);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { clearProfile } = useProfile();
   const { theme } = useTheme();
   const isHeroPage = location.pathname === '/';
   const isDarkMode = theme === 'dark';
@@ -193,7 +195,7 @@ export default function Navbar() {
                   Dashboard
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => { logout(); clearProfile(); }}
                   className={`text-sm font-medium transition-colors px-3 py-2 rounded-xl ${
                     isTransparent ? (isDarkMode ? 'text-white/50 hover:text-white hover:bg-white/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50/50') : 'text-slate-400 dark:text-white/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
                   }`}
@@ -343,7 +345,7 @@ export default function Navbar() {
                         <span>Dashboard</span>
                         <ChevronRight className="w-4 h-4 text-slate-300 dark:text-white/20" />
                       </Link>
-                      <button onClick={() => { logout(); setMobileOpen(false); }}
+                      <button onClick={() => { logout(); clearProfile(); setMobileOpen(false); }}
                         className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                       >Logout</button>
                     </div>
