@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexoraMind — Offer Letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: linear-gradient(145deg, #0b0b12 0%, #101624 50%, #0b0b12 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    /* ═══════ Document Shell ═══════ */
+    .document {
+      width: 820px;
+      min-height: 1100px;
+      background: #ffffff;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,.04),
+        0 8px 24px rgba(0,0,0,.06),
+        0 24px 80px rgba(0,0,0,.14);
+    }
+
+    /* ── Paper Texture ── */
+    .document::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,.003) 3px, rgba(0,0,0,.003) 6px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ═══════ Header Bar ═══════ */
+    .header-bar {
+      background: linear-gradient(135deg, #0f1729 0%, #1a2744 50%, #0f1729 100%);
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 5;
+    }
+    .header-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0080F8 0%, #5b18a8 50%, #7028C0 100%);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand img {
+      height: 32px;
+      filter: brightness(0) invert(1);
+    }
+    .brand-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .header-meta {
+      text-align: right;
+    }
+    .header-meta .doc-type {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 2px;
+    }
+    .header-meta .doc-date {
+      font-size: 12px;
+      color: rgba(255,255,255,.6);
+      font-weight: 400;
+    }
+
+    /* ═══════ Content ═══════ */
+    .content {
+      position: relative;
+      z-index: 5;
+      padding: 40px 52px 36px;
+    }
+
+    /* ── Watermark ── */
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-35deg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 90px;
+      font-weight: 700;
+      color: rgba(0,0,0,.015);
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ── Subject Line ── */
+    .subject {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .subject-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      flex-shrink: 0;
+    }
+    .subject-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, #ddd, transparent);
+    }
+    .subject-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 14px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #0080F8, #7028C0);
+      color: #fff;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── Recipient Block ── */
+    .recipient-block {
+      margin-bottom: 20px;
+    }
+    .recipient-block .dear {
+      font-size: 13px;
+      color: #666;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+    .recipient-block .name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 38px;
+      color: #1a1a2e;
+      line-height: 1.15;
+    }
+    .recipient-block .role {
+      font-size: 13px;
+      color: #555;
+      margin-top: 2px;
+    }
+    .recipient-block .role strong {
+      color: #0080F8;
+      font-weight: 600;
+    }
+
+    /* ── Body Text ── */
+    .body-text {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.85;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+    .body-text strong {
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+
+    /* ── Details Table ── */
+    .details-card {
+      background: #f8f9fc;
+      border: 1px solid #e8e9ee;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .details-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 14px;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 24px;
+    }
+    .detail-item .label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 2px;
+    }
+    .detail-item .value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+    .detail-item .value.highlight {
+      color: #0080F8;
+    }
+
+    /* ── Benefits ── */
+    .benefits {
+      margin: 16px 0;
+    }
+    .benefits-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+    }
+    .benefits-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 24px;
+    }
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+    .benefit-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0080F8, #7028C0);
+      flex-shrink: 0;
+    }
+
+    /* ── Closing ── */
+    .closing {
+      margin-top: 24px;
+    }
+    .closing p {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.7;
+    }
+
+    /* ── Signatures ── */
+    .signatures-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 60px;
+      margin-top: 36px;
+    }
+    .sig {
+      text-align: center;
+      width: 150px;
+    }
+    .sig-line {
+      width: 100%;
+      height: 1px;
+      background: #d1d5db;
+      margin-bottom: 6px;
+    }
+    .sig-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+    .sig-role {
+      font-size: 9px;
+      font-weight: 500;
+      color: #999;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    /* ── Seal ── */
+    .seal-area {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .seal {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seal-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,128,248,.15);
+    }
+    .seal-ring.s1 { inset: 0; }
+    .seal-ring.s2 { inset: 3px; border-style: dashed; border-color: rgba(0,128,248,.1); }
+    .seal-ring.s3 { inset: 6px; border-color: rgba(0,128,248,.08); }
+    .seal-fill {
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,128,248,.03), transparent);
+      border: 0.5px solid rgba(0,128,248,.08);
+    }
+    .seal-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .seal-content svg { width: 16px; height: 16px; color: rgba(0,128,248,.3); display: block; margin: 0 auto 2px; }
+    .seal-content span {
+      font-size: 5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(0,128,248,.3);
+    }
+
+    /* ── Footer ── */
+    .doc-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+    .footer-left {
+      font-size: 10px;
+      color: #bbb;
+    }
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      background: rgba(0,128,248,.04);
+      border: 0.5px solid rgba(0,128,248,.1);
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0080F8;
+    }
+    .footer-badge svg { width: 8px; height: 8px; }
+    .footer-id {
+      font-size: 9px;
+      color: #ccc;
+      font-family: 'DM Sans', monospace;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; padding: 0; min-height: auto; }
+      .document { box-shadow: none; border-radius: 0; width: 100%; }
+      .watermark { color: rgba(0,0,0,.02); }
+    }
+  </style>
+</head>
+<body>
+  <div class="document">
+    <!-- Watermark -->
+    <div class="watermark">NEXORAMIND</div>
+
+    <!-- Header -->
+    <div class="header-bar">
+      <div class="brand">
+        <img src="Logo.png" alt="NexoraMind" />
+      </div>
+      <div class="header-meta">
+        <p class="doc-type">Internship Offer Letter</p>
+        <p class="doc-date">August 21, 2026</p>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Subject -->
+      <div class="subject">
+        <span class="subject-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Offer of Internship
+        </span>
+        <div class="subject-line"></div>
+        <span class="subject-label">Ref: NM-OL-2026-00412</span>
+      </div>
+
+      <!-- Recipient -->
+      <div class="recipient-block">
+        <p class="dear">Dear</p>
+        <p class="name">Priya Sharma</p>
+        <p class="role">Offered Role: <strong>Frontend Development Intern</strong></p>
+      </div>
+
+      <!-- Body -->
+      <div class="body-text">
+        <p>
+          We are pleased to extend this offer of internship at <strong>NexoraMind Tech</strong>. After reviewing your application and credentials, we believe you would be a valuable addition to our team. We are excited to have you join us and contribute to building innovative solutions.
+        </p>
+      </div>
+      <div class="body-text">
+        <p>
+          This letter confirms your acceptance into our <strong>Virtual Internship Program</strong>. Below are the details of your internship assignment and the terms of engagement.
+        </p>
+      </div>
+
+      <!-- Details Card -->
+      <div class="details-card">
+        <p class="details-title">Internship Details</p>
+        <div class="details-grid">
+          <div class="detail-item">
+            <p class="label">Full Name</p>
+            <p class="value">Priya Sharma</p>
+          </div>
+          <div class="detail-item">
+            <p class="label">Role / Position</p>
+            <p class="value highlight">Frontend Development Intern</p>
+          </div>
+          <div class="detail-item">
+            <p class="label">Duration</p>
+            <p class="value">3 Months</p>
+          </div>
+          <div class="detail-item">
+            <p class="label">Internship Period</p>
+            <p class="value">01 Jul 2026 — 01 Oct 2026</p>
+          </div>
+          <div class="detail-item">
+            <p class="label">Work Mode</p>
+            <p class="value">Remote</p>
+          </div>
+         
+          <div class="detail-item">
+            <p class="label">Reporting Manager</p>
+            <p class="value">Ankit Verma</p>
+          </div>
+          <div class="detail-item">
+            <p class="label">Offer Letter ID</p>
+            <p class="value" style="font-family: 'DM Sans', monospace; font-size: 12px; letter-spacing: 0.5px;">NM-OL-2026-00412</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benefits -->
+      <div class="benefits">
+        <p class="benefits-title">What You Will Get</p>
+        <div class="benefits-list">
+          <div class="benefit-item"><span class="benefit-dot"></span> Real-world project experience</div>
+          <div class="benefit-item"><span class="benefit-dot"></span> Letter of Recommendation</div>
+          <div class="benefit-item"><span class="benefit-dot"></span> Completion Certificate</div>
+          <div class="benefit-item"><span class="benefit-dot"></span> Mentorship from industry experts</div>
+          <div class="benefit-item"><span class="benefit-dot"></span> Networking opportunities</div>
+          <div class="benefit-item"><span class="benefit-dot"></span> Flexible working hours</div>
+        </div>
+      </div>
+
+      <!-- Body continued -->
+      <div class="body-text">
+        <p>
+          You are required to dedicate a minimum of <strong>20 hours per week</strong> to the assigned tasks and projects. All work will be conducted remotely, and you will have access to our collaboration tools and project repositories.
+        </p>
+      </div>
+      <div class="body-text">
+        <p>
+          Upon successful completion of the internship and all assigned tasks, you will receive a <strong>Certificate of Internship</strong> and a <strong>Letter of Recommendation</strong> from NexoraMind Tech.
+        </p>
+      </div>
+
+      <!-- Closing -->
+      <div class="closing">
+        <p>
+          We look forward to your contributions and are confident this will be a rewarding experience. Please confirm your acceptance by responding to this offer at your earliest convenience.
+        </p>
+      </div>
+      <div class="closing" style="margin-top: 20px;">
+        <p style="font-size: 13px; color: #444;">Warm regards,</p>
+      </div>
+
+      <!-- Signatures -->
+      <div class="signatures-row">
+        <div class="sig">
+          <div class="sig-line"></div>
+          <p class="sig-name">Ankit Verma</p>
+          <p class="sig-role">Founder &amp; CEO</p>
+        </div>
+      </div>
+
+      <!-- Seal -->
+      <div class="seal-area">
+        <div class="seal">
+          <div class="seal-ring s1"></div>
+          <div class="seal-ring s2"></div>
+          <div class="seal-ring s3"></div>
+          <div class="seal-fill"></div>
+          <div class="seal-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="doc-footer">
+        <span class="footer-id">NM-OL-2026-00412</span>
+        <div class="footer-right">
+          <div class="footer-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Official Document
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
