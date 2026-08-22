@@ -17,6 +17,8 @@ import VerifyPage from './pages/public/VerifyPage';
 import CertificateVerifyPage from './pages/public/CertificateVerifyPage';
 import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
+import OfferLettersPage from './pages/public/OfferLettersPage';
+import PublicCertificatesPage from './pages/public/PublicCertificatesPage';
 
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
@@ -55,6 +57,8 @@ export default function App() {
             <Route path="/verify/:certificateId" element={<CertificateVerifyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/offer-letters" element={<OfferLettersPage />} />
+            <Route path="/certificates-list" element={<PublicCertificatesPage />} />
           </Route>
 
           {/* Auth Routes */}

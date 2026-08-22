@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronRight, ChevronDown, Shield, Award, Briefcase, CheckCircle, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronRight, ChevronDown, Shield, Award, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -14,20 +14,6 @@ const certificationLinks = [
   { to: '/certifications/backend', label: 'Backend Development', desc: 'Node.js, Python, Go', icon: Shield },
   { to: '/certifications/datascience', label: 'Data Science & ML', desc: 'Python, TensorFlow', icon: Shield },
   { to: '/certifications/cloud', label: 'Cloud Computing', desc: 'AWS, Azure, GCP', icon: Shield },
-];
-
-const internshipLinks = [
-  { to: '/internships', label: 'All Internships', desc: 'Browse all open positions', icon: Briefcase },
-  { to: '/internships/frontend', label: 'Frontend Intern', desc: 'React, Vue, Angular', icon: Briefcase },
-  { to: '/internships/backend', label: 'Backend Intern', desc: 'Node.js, Python, Go', icon: Briefcase },
-  { to: '/internships/fullstack', label: 'Full-Stack Intern', desc: 'End-to-end development', icon: Briefcase },
-  { to: '/internships/devops', label: 'DevOps Intern', desc: 'Docker, Kubernetes', icon: Briefcase },
-];
-
-const moreLinks = [
-  { to: '/verify', label: 'Verify Certificate', desc: 'Validate any certificate', icon: CheckCircle },
-  { to: '/offer-letter', label: 'Download Offer Letter', desc: 'Get your offer letter', icon: Award },
-  { to: '/about', label: 'About Us', desc: 'Learn about NexoraMind', icon: Shield },
 ];
 
 /* ─── Dropdown Component ────────────────────────────────── */
@@ -161,35 +147,33 @@ export default function Navbar() {
               </Link>
 
               {/* Certifications Dropdown */}
-              <div className="relative" onMouseEnter={() => handleMouseEnter('certifications')} onMouseLeave={handleMouseLeave}>
+              {/* <div className="relative" onMouseEnter={() => handleMouseEnter('certifications')} onMouseLeave={handleMouseLeave}>
                 <button className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(activeDropdown === 'certifications')}`}>
-                  Offer Letters 
-                  {/* <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'certifications' ? 'rotate-180' : ''}`} /> */}
+                  Certifications
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'certifications' ? 'rotate-180' : ''}`} />
                 </button>
                 <Dropdown items={certificationLinks} isOpen={activeDropdown === 'certifications'} />
-              </div>
+              </div> */}
 
-              {/* Internships Dropdown */}
-              <div className="relative" onMouseEnter={() => handleMouseEnter('internships')} onMouseLeave={handleMouseLeave}>
-                <button className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(activeDropdown === 'internships')}`}>
-                  Internships
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'internships' ? 'rotate-180' : ''}`} />
-                </button>
-                <Dropdown items={internshipLinks} isOpen={activeDropdown === 'internships'} />
-              </div>
+              <Link to="/internships" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/internships')}`}>
+                Internships
+              </Link>
 
-              <Link to="/verify" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/verify')}`}>
+              <Link to="/certificates-list" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/certificates-list')}`}>
                 Certificates
               </Link>
 
-              {/* More Dropdown */}
-              <div className="relative" onMouseEnter={() => handleMouseEnter('more')} onMouseLeave={handleMouseLeave}>
-                <button className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(activeDropdown === 'more')}`}>
-                  More
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'more' ? 'rotate-180' : ''}`} />
-                </button>
-                <Dropdown items={moreLinks} isOpen={activeDropdown === 'more'} />
-              </div>
+              <Link to="/offer-letters" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/offer-letters')}`}>
+                Offer Letters
+              </Link>
+
+              {/* <Link to="/verify" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/verify')}`}>
+                Verify
+              </Link> */}
+
+              <Link to="/about" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/about')}`}>
+                About
+              </Link>
             </div>
           </div>
 
@@ -308,37 +292,29 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
 
-                {/* Internships */}
-                <div>
-                  <button onClick={() => toggleMobileSection('internships')}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      expandedMobile === 'internships'
-                        ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                        : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <span>Internships</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedMobile === 'internships' ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {expandedMobile === 'internships' && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                        <div className="pl-4 pb-1 pt-1 space-y-0.5">
-                          {internshipLinks.map((item) => (
-                            <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white transition-all"
-                            >
-                              <div className="w-8 h-8 rounded-lg bg-secondary-50 dark:bg-secondary-500/15 flex items-center justify-center shrink-0">
-                                <item.icon className="w-3.5 h-3.5 text-secondary-500 dark:text-secondary-400" />
-                              </div>
-                              <span>{item.label}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <Link to="/internships" onClick={() => setMobileOpen(false)}
+                  className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    location.pathname === '/internships'
+                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                      : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >Internships</Link>
+
+                <Link to="/certificates-list" onClick={() => setMobileOpen(false)}
+                  className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    location.pathname === '/certificates-list'
+                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                      : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >Certificates</Link>
+
+                <Link to="/offer-letters" onClick={() => setMobileOpen(false)}
+                  className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    location.pathname === '/offer-letters'
+                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                      : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >Offer Letters</Link>
 
                 <Link to="/verify" onClick={() => setMobileOpen(false)}
                   className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
@@ -346,39 +322,15 @@ export default function Navbar() {
                       ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
                       : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
                   }`}
-                >Verify Certificate</Link>
+                >Verify</Link>
 
-                {/* More */}
-                <div>
-                  <button onClick={() => toggleMobileSection('more')}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      expandedMobile === 'more'
-                        ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                        : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <span>More</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedMobile === 'more' ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {expandedMobile === 'more' && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                        <div className="pl-4 pb-1 pt-1 space-y-0.5">
-                          {moreLinks.map((item) => (
-                            <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white transition-all"
-                            >
-                              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
-                                <item.icon className="w-3.5 h-3.5 text-slate-400 dark:text-white/30" />
-                              </div>
-                              <span>{item.label}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <Link to="/about" onClick={() => setMobileOpen(false)}
+                  className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    location.pathname === '/about'
+                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                      : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >About</Link>
 
                 {/* Account */}
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.06]">

@@ -7,9 +7,10 @@ const footerSections = [
     title: 'Platform',
     links: [
       { to: '/certifications', label: 'Certifications' },
+      { to: '/certificates-list', label: 'Certificates' },
       { to: '/internships', label: 'Internships' },
+      { to: '/offer-letters', label: 'Offer Letters' },
       { to: '/verify', label: 'Verify Certificate' },
-      { to: '/offer-letter', label: 'Offer Letter' },
       { to: '/about', label: 'About Us' },
     ],
   },

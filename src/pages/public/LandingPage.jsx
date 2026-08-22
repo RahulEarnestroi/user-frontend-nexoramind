@@ -286,7 +286,7 @@ export default function LandingPage() {
                   <QrCode className="w-5 h-5" /> Verify Certificate
                 </div>
               </Link>
-              <Link to="/offer-letter">
+              <Link to="/offer-letters">
                 <div className="flex items-center gap-2 px-6 py-4 text-slate-800 dark:text-white/50 text-sm font-medium hover:text-slate-900 dark:hover:text-white transition-all duration-300 cursor-pointer">
                   <Download className="w-4 h-4" /> Download Offer Letter
                 </div>
