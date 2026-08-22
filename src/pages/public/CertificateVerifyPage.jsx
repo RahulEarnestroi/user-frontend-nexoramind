@@ -32,17 +32,17 @@ export default function CertificateVerifyPage() {
 
   if (!cert) {
     return (
-      <div className="py-20 bg-gradient-subtle min-h-screen">
+      <div className="py-20 bg-black min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
         <div className="max-w-2xl mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-            <div className="w-20 h-20 mx-auto bg-danger-50 rounded-full flex items-center justify-center mb-6">
-              <XCircle className="w-10 h-10 text-danger-500" />
+            <div className="w-20 h-20 mx-auto bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Certificate Not Found</h1>
-            <p className="text-slate-600 mb-6">
+            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Certificate Not Found</h1>
+            <p className="text-white/40 mb-6 font-normal">
               Please check the certificate ID and try again.
             </p>
-            <p className="text-sm text-slate-500 mb-6">Certificate ID: {certificateId}</p>
+            <p className="text-sm text-white/30 mb-6">Certificate ID: {certificateId}</p>
             <Link to="/verify">
               <Button>Try Another ID</Button>
             </Link>
@@ -53,22 +53,22 @@ export default function CertificateVerifyPage() {
   }
 
   return (
-    <div className="py-16 bg-gradient-subtle min-h-screen">
+    <div className="py-16 bg-black min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Status Banner */}
-          <div className={`rounded-xl p-6 mb-8 ${isRevoked ? 'bg-danger-50 border border-danger-200' : 'bg-success-50 border border-green-200'}`}>
+          <div className={`rounded-xl p-6 mb-8 ${isRevoked ? 'bg-red-500/10 border border-red-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'}`}>
             <div className="flex items-center gap-3">
               {isRevoked ? (
-                <XCircle className="w-8 h-8 text-danger-500" />
+                <XCircle className="w-8 h-8 text-red-400" />
               ) : (
-                <CheckCircle className="w-8 h-8 text-success-500" />
+                <CheckCircle className="w-8 h-8 text-emerald-400" />
               )}
               <div>
-                <h2 className={`text-xl font-bold ${isRevoked ? 'text-danger-700' : 'text-success-700'}`}>
+                <h2 className={`text-xl font-bold ${isRevoked ? 'text-red-400' : 'text-emerald-400'}`}>
                   {isRevoked ? 'REVOKED' : 'VERIFIED'}
                 </h2>
-                <p className={`text-sm ${isRevoked ? 'text-danger-600' : 'text-success-600'}`}>
+                <p className={`text-sm ${isRevoked ? 'text-red-400/70' : 'text-emerald-400/70'}`}>
                   {isRevoked ? 'This certificate is no longer valid.' : 'This certificate is authentic and has been issued by NexoraMind Tech.'}
                 </p>
               </div>
@@ -78,49 +78,49 @@ export default function CertificateVerifyPage() {
           {/* Certificate Details */}
           <Card className="p-8 mb-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                <Award className="w-6 h-6 text-primary-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-xl flex items-center justify-center">
+                <Award className="w-6 h-6 text-primary-400" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider">Certificate of Achievement</p>
-                <p className="font-semibold text-slate-900">{cert.certificationName}</p>
+                <p className="text-xs text-white/40 uppercase tracking-wider font-medium">Certificate of Achievement</p>
+                <p className="font-semibold text-white">{cert.certificationName}</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-3 py-3 border-b border-slate-100">
-                <User className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 py-3 border-b border-white/[0.06]">
+                <User className="w-5 h-5 text-white/30" />
                 <div>
-                  <p className="text-xs text-slate-500">Student</p>
-                  <p className="font-semibold text-slate-900">{cert.studentName}</p>
+                  <p className="text-xs text-white/40">Student</p>
+                  <p className="font-semibold text-white">{cert.studentName}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 py-3 border-b border-slate-100">
-                <Hash className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 py-3 border-b border-white/[0.06]">
+                <Hash className="w-5 h-5 text-white/30" />
                 <div>
-                  <p className="text-xs text-slate-500">Certificate ID</p>
-                  <p className="font-mono font-semibold text-slate-900">{cert.certificateId}</p>
+                  <p className="text-xs text-white/40">Certificate ID</p>
+                  <p className="font-mono font-semibold text-white">{cert.certificateId}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 py-3 border-b border-slate-100">
-                <Calendar className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 py-3 border-b border-white/[0.06]">
+                <Calendar className="w-5 h-5 text-white/30" />
                 <div>
-                  <p className="text-xs text-slate-500">Issued</p>
-                  <p className="text-slate-900">{formatDate(cert.issueDate)}</p>
+                  <p className="text-xs text-white/40">Issued</p>
+                  <p className="text-white">{formatDate(cert.issueDate)}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 py-3 border-b border-slate-100">
-                <Building2 className="w-5 h-5 text-slate-400" />
+              <div className="flex items-center gap-3 py-3 border-b border-white/[0.06]">
+                <Building2 className="w-5 h-5 text-white/30" />
                 <div>
-                  <p className="text-xs text-slate-500">Score</p>
-                  <p className="text-slate-900">{cert.score}%</p>
+                  <p className="text-xs text-white/40">Score</p>
+                  <p className="text-white">{cert.score}%</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 py-3">
-                <Shield className="w-5 h-5 text-slate-400" />
+                <Shield className="w-5 h-5 text-white/30" />
                 <div>
-                  <p className="text-xs text-slate-500">Issued by</p>
-                  <p className="text-slate-900">NexoraMind Tech</p>
+                  <p className="text-xs text-white/40">Issued by</p>
+                  <p className="text-white">NexoraMind Tech</p>
                 </div>
               </div>
             </div>

@@ -9,14 +9,14 @@ const fadeUp = {
 
 export default function AboutPage() {
   return (
-    <div className="py-20 bg-gradient-subtle min-h-screen">
+    <div className="py-20 bg-black min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial="hidden" animate="visible" variants={fadeUp} className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold mb-4 border border-primary-100">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-semibold mb-4 border border-primary-500/15 tracking-wide uppercase">
             <Zap className="w-3 h-3" /> About Us
           </span>
-          <h1 className="text-4xl font-bold text-slate-900">About NexoraMind Tech</h1>
-          <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <h1 className="text-4xl font-bold text-white tracking-tight">About NexoraMind Tech</h1>
+          <p className="mt-4 text-lg text-white/40 max-w-2xl mx-auto leading-relaxed font-normal">
             Building the most trusted certification and internship platform for tech professionals worldwide.
           </p>
         </motion.div>
@@ -38,11 +38,11 @@ export default function AboutPage() {
               transition={{ delay: i * 0.08, duration: 0.5 }}
             >
               <Card hover className="p-6 h-full">
-                <div className="w-11 h-11 bg-primary-50 rounded-2xl flex items-center justify-center mb-4">
-                  <item.icon className="w-5 h-5 text-primary-600" />
+                <div className="w-11 h-11 bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-2xl flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-primary-400" />
                 </div>
-                <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-white mb-2 tracking-tight">{item.title}</h3>
+                <p className="text-sm text-white/40 leading-relaxed font-normal">{item.desc}</p>
               </Card>
             </motion.div>
           ))}

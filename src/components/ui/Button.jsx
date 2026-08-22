@@ -1,13 +1,13 @@
 import { cn } from '../../lib/utils';
 
 const variants = {
-  primary: 'bg-primary-900 text-white hover:shadow-lg hover:shadow-[#00]/25 hover:-translate-y-0.5 active:translate-y-0',
-  secondary: 'bg-[#7028C0] text-white hover:shadow-lg hover:shadow-[#7028C0]/25 hover:-translate-y-0.5 active:translate-y-0',
-  ghost: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
-  danger: 'bg-red-500 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/25',
-  success: 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/25',
-  outline: 'border border-[#0080F8]/30 text-[#0080F8] hover:bg-[#0080F8]/5 hover:border-[#0080F8]/50',
-  dark: 'bg-[#080860] text-white hover:bg-[#060650] hover:shadow-lg',
+  primary: 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white hover:shadow-lg hover:shadow-primary-500/25 hover:-translate-y-0.5 active:translate-y-0',
+  secondary: 'bg-white/[0.06] text-white border border-white/[0.1] hover:bg-white/[0.1] hover:border-white/[0.2] hover:-translate-y-0.5 active:translate-y-0',
+  ghost: 'text-white/60 hover:text-white hover:bg-white/[0.06]',
+  danger: 'bg-red-500/90 text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/25',
+  success: 'bg-emerald-500/90 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/25',
+  outline: 'border border-primary-500/30 text-primary-400 hover:bg-primary-500/10 hover:border-primary-500/50',
+  dark: 'bg-slate-800 text-white hover:bg-slate-700 hover:shadow-lg',
 };
 
 const sizes = {

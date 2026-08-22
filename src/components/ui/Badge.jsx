@@ -1,11 +1,11 @@
 import { cn } from '../../lib/utils';
 
 const variants = {
-  default: 'bg-slate-100 text-slate-700',
-  primary: 'bg-primary-50 text-primary-700 border border-primary-100',
-  success: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
-  danger: 'bg-red-50 text-red-700 border border-red-100',
-  warning: 'bg-amber-50 text-amber-700 border border-amber-100',
+  default: 'bg-white/[0.06] text-white/60 border border-white/[0.08]',
+  primary: 'bg-primary-500/10 text-primary-400 border border-primary-500/15',
+  success: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/15',
+  danger: 'bg-red-500/10 text-red-400 border border-red-500/15',
+  warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/15',
 };
 
 export default function Badge({ variant = 'default', className, children }) {

@@ -20,19 +20,19 @@ export default function StudentLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+    <div className="min-h-screen bg-black flex" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+      {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />}
 
       <aside className={cn(
-        'fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 lg:translate-x-0',
+        'fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white/[0.02] border-r border-white/[0.06] flex flex-col transition-transform duration-300 lg:translate-x-0 backdrop-blur-xl',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
           <Link to="/student/dashboard" className="flex items-center gap-2">
             <img src={Logo} alt="NexoraMind" className="h-7 w-auto" />
           </Link>
-          <button className="lg:hidden p-1.5 rounded-lg hover:bg-slate-100" onClick={() => setSidebarOpen(false)}>
-            <X className="w-4 h-4 text-slate-500" />
+          <button className="lg:hidden p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors" onClick={() => setSidebarOpen(false)}>
+            <X className="w-4 h-4 text-white/50" />
           </button>
         </div>
 
@@ -46,7 +46,9 @@ export default function StudentLayout() {
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                  isActive ? 'bg-primary-50 text-primary-700 shadow-sm shadow-primary-500/5' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  isActive
+                    ? 'bg-primary-500/10 text-primary-400 border border-primary-500/15'
+                    : 'text-white/50 hover:bg-white/[0.04] hover:text-white/80'
                 )}
               >
                 <link.icon className="w-5 h-5" />
@@ -56,17 +58,17 @@ export default function StudentLayout() {
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t border-slate-100">
+        <div className="px-3 py-4 border-t border-white/[0.06]">
           <div className="flex items-center gap-3 px-3 py-2 mb-1">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-sm font-bold text-white">{user.name.charAt(0)}</span>
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
-              <p className="text-xs text-slate-400 truncate">{user.email}</p>
+              <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+              <p className="text-xs text-white/30 truncate">{user.email}</p>
             </div>
           </div>
-          <button onClick={logout} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+          <button onClick={logout} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-white/50 hover:bg-red-500/10 hover:text-red-400 transition-colors">
             <LogOut className="w-5 h-5" />
             Logout
           </button>
@@ -74,13 +76,13 @@ export default function StudentLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-4 py-3 flex items-center gap-4">
-          <button className="lg:hidden p-2 rounded-lg hover:bg-slate-100" onClick={() => setSidebarOpen(true)}>
-            <Menu className="w-5 h-5" />
+        <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/[0.06] px-4 py-3 flex items-center gap-4">
+          <button className="lg:hidden p-2 rounded-lg hover:bg-white/[0.06]" onClick={() => setSidebarOpen(true)}>
+            <Menu className="w-5 h-5 text-white/60" />
           </button>
           <div className="flex-1" />
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
               <span className="text-xs font-bold text-white">{user.name.charAt(0)}</span>
             </div>
           </div>

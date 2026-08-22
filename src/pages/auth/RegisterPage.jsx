@@ -8,8 +8,6 @@ import Input from '../../components/ui/Input';
 import Card from '../../components/ui/Card';
 import Logo from '../../assets/Logo.png';
 
-
-
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
@@ -53,19 +51,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle flex">
+    <div className="min-h-screen bg-black flex" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       {/* Left: Visual */}
-      <div className="hidden lg:flex lg:w-1/2 bg-accent-950 relative overflow-hidden items-center justify-center">
-        <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="hidden lg:flex lg:w-1/2 bg-white/[0.02] relative overflow-hidden items-center justify-center border-r border-white/[0.06]">
+        <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-[-20%] left-[-20%] w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary-500/8 rounded-full blur-[80px]" />
 
         <div className="relative z-10 text-center px-12">
-          <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-primary-500/20">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-primary-500/25">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Start Your Journey</h2>
-          <p className="text-slate-400 leading-relaxed max-w-sm mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">Start Your Journey</h2>
+          <p className="text-white/40 leading-relaxed max-w-sm mx-auto font-normal">
             Create an account to access certifications, internships, and advance your career with verified credentials.
           </p>
         </div>
@@ -78,16 +76,16 @@ export default function RegisterPage() {
             <Link to="/" className="inline-flex items-center gap-2 mb-6">
               <img src={Logo} alt="NexoraMind Tech" className="h-9 w-auto" />
             </Link>
-            <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
-            <p className="text-slate-500 mt-1">Start your certification journey</p>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
+            <p className="text-white/40 mt-1 font-normal">Start your certification journey</p>
           </div>
 
           <Card className="p-8">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">{error}</div>
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400 font-medium">{error}</div>
               )}
-              
+
               <Input
                 label="Full Name"
                 placeholder="John Doe"
@@ -104,7 +102,7 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <Mail className="absolute right-3 top-9 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Mail className="absolute right-3 top-9 w-4 h-4 text-white/25 pointer-events-none" />
               </div>
               <div className="relative">
                 <Input
@@ -115,7 +113,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-9 p-0.5 text-slate-400 hover:text-slate-600">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-9 p-0.5 text-white/30 hover:text-white/60 transition-colors">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -125,15 +123,15 @@ export default function RegisterPage() {
             </form>
 
             <div className="my-5 flex items-center gap-3">
-              <div className="flex-1 h-px bg-slate-100" />
-              <span className="text-xs text-slate-400 font-medium">or continue with</span>
-              <div className="flex-1 h-px bg-slate-100" />
+              <div className="flex-1 h-px bg-white/[0.06]" />
+              <span className="text-xs text-white/30 font-medium">or continue with</span>
+              <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
 
             <button
               onClick={handleGoogleRegister}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-white/[0.08] rounded-xl text-sm font-medium text-white/60 hover:bg-white/[0.04] hover:border-white/[0.15] transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -144,10 +142,10 @@ export default function RegisterPage() {
               Sign up with Google
             </button>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-              <p className="text-sm text-slate-500">
+            <div className="mt-6 pt-5 border-t border-white/[0.06] text-center">
+              <p className="text-sm text-white/40">
                 Already have an account?{' '}
-                <Link to="/login" className="text-primary-600 font-semibold hover:underline">Sign in</Link>
+                <Link to="/login" className="text-primary-400 font-semibold hover:underline">Sign in</Link>
               </p>
             </div>
           </Card>
