@@ -106,7 +106,7 @@ function FloatingRing({ className, delay = 0 }) {
       transition={{ duration: 1.2, delay, ease: [0.22, 1, 0.36, 1] }}
       className={`absolute ${className}`}
     >
-      <div className="w-full h-full rounded-full border border-white/[0.06] animate-float" style={{ animationDelay: `${delay}s` }} />
+      <div className="w-full h-full rounded-full border border-slate-200 dark:border-white/[0.06] animate-float" style={{ animationDelay: `${delay}s` }} />
     </motion.div>
   );
 }
@@ -213,7 +213,7 @@ const testimonials = [
 
 export default function LandingPage() {
   return (
-    <div className="overflow-hidden bg-black" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+    <div className="overflow-hidden bg-white dark:bg-black">
 
       {/* ============ HERO ============ */}
       <section className="relative min-h-[92vh] flex flex-col justify-center overflow-hidden">
@@ -250,11 +250,11 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500" />
               </span>
-              <span className="text-white/80 text-sm font-medium tracking-wide">#1 Choice for Virtual Internship Programs</span>
+              <span className="text-primary-600 dark:text-primary-400 text-sm font-medium tracking-wide">#1 Choice for Virtual Internship Programs</span>
             </motion.div>
 
             {/* Headline with typewriter */}
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-extrabold text-white leading-[1.06] tracking-tight max-w-4xl">
+            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-extrabold text-slate-950 dark:text-white leading-[1.06] tracking-tight max-w-4xl">
               Where Learning Turns Into
               <br />
               <TypewriterText
@@ -266,7 +266,7 @@ export default function LandingPage() {
             </motion.h1>
 
             {/* Subtitle */}
-            <motion.p variants={fadeUp} className="mt-7 text-lg sm:text-xl text-white/60 leading-relaxed max-w-2xl font-normal">
+            <motion.p variants={fadeUp} className="mt-7 text-lg sm:text-xl text-slate-500 dark:text-white/60 leading-relaxed max-w-2xl font-normal">
               Kickstart your career with our free virtual internship program. Work on real projects, gain practical skills and earn an industry-recognized certificate.
             </motion.p>
 
@@ -282,12 +282,12 @@ export default function LandingPage() {
                 </div>
               </Link>
               <Link to="/verify">
-                <div className="flex items-center gap-2.5 px-8 py-4 rounded-2xl border border-white/[0.15] text-white/80 text-base font-semibold hover:bg-white/[0.06] hover:border-white/[0.25] transition-all duration-300 cursor-pointer backdrop-blur-sm">
+                <div className="flex items-center gap-2.5 px-8 py-4 rounded-2xl border border-white/[0.15] text-slate-600 dark:text-white/80 text-base font-semibold hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.25] transition-all duration-300 cursor-pointer backdrop-blur-sm">
                   <QrCode className="w-5 h-5" /> Verify Certificate
                 </div>
               </Link>
               <Link to="/offer-letter">
-                <div className="flex items-center gap-2 px-6 py-4 text-white/50 text-sm font-medium hover:text-white/80 transition-all duration-300 cursor-pointer">
+                <div className="flex items-center gap-2 px-6 py-4 text-slate-100 dark:text-white/50 text-sm font-medium hover:text-slate-900 dark:hover:text-white transition-all duration-300 cursor-pointer">
                   <Download className="w-4 h-4" /> Download Offer Letter
                 </div>
               </Link>
@@ -303,7 +303,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="mb-8"
           >
-            <p className="text-white/30 text-xs sm:text-sm text-center font-medium tracking-widest uppercase">
+            <p className="text-slate-400 dark:text-white/30 text-xs sm:text-sm text-center font-medium tracking-widest uppercase">
               Real-time platform growth powered by active learners completing assignments
             </p>
           </motion.div>
@@ -315,16 +315,16 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + i * 0.1, duration: 0.5 }}
-                className="text-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 group"
+                className="text-center p-6 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] backdrop-blur-sm hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 group"
               >
                 <div className="w-10 h-10 mx-auto bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-xl flex items-center justify-center mb-3 group-hover:from-primary-500/25 group-hover:to-secondary-500/25 transition-all">
-                  <metric.icon className="w-5 h-5 text-primary-400" />
+                  <metric.icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
-                <p className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   <AnimatedCounter target={metric.value} suffix={metric.suffix} />
                 </p>
-                <p className="text-sm font-semibold text-white/70 mt-1">{metric.label}</p>
-                <p className="text-xs text-white/30 mt-1 hidden sm:block">{metric.desc}</p>
+                <p className="text-sm font-semibold text-slate-100 dark:text-white/70 mt-1">{metric.label}</p>
+                <p className="text-xs text-slate-400 dark:text-white/30 mt-1 hidden sm:block">{metric.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -332,18 +332,18 @@ export default function LandingPage() {
       </section>
 
       {/* ============ TRUSTED BY ============ */}
-      <section className="py-20 border-t border-white/[0.06]">
+      <section className="py-20 border-t border-slate-200 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Section>
-            <p className="text-white/30 text-xs font-semibold tracking-widest uppercase mb-3">
+            <p className="text-slate-400 dark:text-white/30 text-xs font-semibold tracking-widest uppercase mb-3">
               Trusted by Students Worldwide
             </p>
-            <p className="text-white/40 max-w-2xl mx-auto text-lg font-normal mb-10">
+            <p className="text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal mb-10">
               NexoraMind has helped learners build skills, complete real projects, and grow their careers across multiple countries.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
               {['React.js', 'Node.js', 'Python', 'AWS', 'Docker', 'Figma'].map((tech, i) => (
-                <span key={i} className="text-xl font-extrabold text-white/15 hover:text-primary-400 transition-colors duration-300 cursor-default select-none">{tech}</span>
+                <span key={i} className="text-xl font-extrabold text-slate-50 dark:text-white/15 hover:text-primary-600 dark:text-primary-400 transition-colors duration-300 cursor-default select-none">{tech}</span>
               ))}
             </div>
           </Section>
@@ -351,17 +351,17 @@ export default function LandingPage() {
       </section>
 
       {/* ============ WHY CHOOSE US ============ */}
-      <section className="py-24 border-t border-white/[0.06]">
+      <section className="py-24 border-t border-slate-200 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Section>
             <div className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-semibold mb-4 border border-primary-500/15 tracking-wide uppercase">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
                 <Zap className="w-3 h-3" /> Why NexoraMind
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Empowering the Next Generation of Tech Leaders
               </h2>
-              <p className="mt-4 text-white/40 max-w-2xl mx-auto text-lg font-normal">
+              <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">
                 Through practical learning and industry-aligned internships.
               </p>
             </div>
@@ -376,12 +376,12 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.5 }}
               >
-                <div className="p-7 h-full rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 group">
+                <div className="p-7 h-full rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 group">
                   <div className="w-12 h-12 bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-2xl flex items-center justify-center mb-5 group-hover:from-primary-500/25 group-hover:to-secondary-500/25 group-hover:scale-110 transition-all duration-300">
-                    <feature.icon className="w-6 h-6 text-primary-400" />
+                    <feature.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <h3 className="font-bold text-white mb-2 text-lg tracking-tight">{feature.title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed font-normal">{feature.desc}</p>
+                  <h3 className="font-bold text-slate-950 dark:text-white mb-2 text-lg tracking-tight">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed font-normal">{feature.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -390,17 +390,17 @@ export default function LandingPage() {
       </section>
 
       {/* ============ TECH DOMAINS ============ */}
-      <section className="py-24 border-t border-white/[0.06]">
+      <section className="py-24 border-t border-slate-200 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Section>
             <div className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-semibold mb-4 border border-primary-500/15 tracking-wide uppercase">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
                 <Target className="w-3 h-3" /> Tech Domains
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Certifications Across the Stack
               </h2>
-              <p className="mt-4 text-white/40 max-w-2xl mx-auto text-lg font-normal">
+              <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">
                 From frontend to cloud infrastructure, we cover every layer.
               </p>
             </div>
@@ -415,15 +415,15 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06, duration: 0.5 }}
               >
-                <div className="group flex items-center gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 cursor-pointer">
+                <div className="group flex items-center gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 cursor-pointer">
                   <div className="w-11 h-11 bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-xl flex items-center justify-center shrink-0 group-hover:from-primary-500/25 group-hover:to-secondary-500/25 group-hover:scale-110 transition-all duration-300">
-                    <domain.icon className="w-5 h-5 text-primary-400" />
+                    <domain.icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                   </div>
                   <div className="min-w-0">
-                    <span className="font-semibold text-white text-sm block">{domain.label}</span>
-                    <span className="text-xs text-white/30 font-medium">{domain.desc}</span>
+                    <span className="font-semibold text-slate-950 dark:text-white text-sm block">{domain.label}</span>
+                    <span className="text-xs text-slate-400 dark:text-white/30 font-medium">{domain.desc}</span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-white/15 ml-auto shrink-0 opacity-0 group-hover:opacity-100 group-hover:text-primary-400 transition-all duration-300" />
+                  <ArrowUpRight className="w-4 h-4 text-slate-50 dark:text-white/15 ml-auto shrink-0 opacity-0 group-hover:opacity-100 group-hover:text-primary-600 dark:text-primary-400 transition-all duration-300" />
                 </div>
               </motion.div>
             ))}
@@ -432,17 +432,17 @@ export default function LandingPage() {
       </section>
 
       {/* ============ HOW IT WORKS ============ */}
-      <section className="py-24 border-t border-white/[0.06]">
+      <section className="py-24 border-t border-slate-200 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Section>
             <div className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-semibold mb-4 border border-primary-500/15 tracking-wide uppercase">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
                 <Sparkles className="w-3 h-3" /> How It Works
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 From Learning to Certified
               </h2>
-              <p className="mt-4 text-white/40 max-w-2xl mx-auto text-lg font-normal">
+              <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">
                 Four simple steps to advance your career.
               </p>
             </div>
@@ -462,10 +462,10 @@ export default function LandingPage() {
                 className="text-center relative"
               >
                 <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mb-4 relative z-10 shadow-lg shadow-primary-500/25 hover:scale-110 transition-transform duration-300">
-                  <span className="font-bold text-xl text-white">{item.step}</span>
+                  <span className="font-bold text-xl text-slate-950 dark:text-white">{item.step}</span>
                 </div>
-                <h3 className="font-bold text-white mb-1 tracking-tight">{item.title}</h3>
-                <p className="text-sm text-white/40 font-normal">{item.desc}</p>
+                <h3 className="font-bold text-slate-950 dark:text-white mb-1 tracking-tight">{item.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-white/40 font-normal">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -473,17 +473,17 @@ export default function LandingPage() {
       </section>
 
       {/* ============ TESTIMONIALS ============ */}
-      <section className="py-24 border-t border-white/[0.06]">
+      <section className="py-24 border-t border-slate-200 dark:border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Section>
             <div className="text-center mb-16">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-semibold mb-4 border border-primary-500/15 tracking-wide uppercase">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
                 <Quote className="w-3 h-3" /> Testimonials
               </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                 What Our Interns Say
               </h2>
-              <p className="mt-4 text-white/40 max-w-2xl mx-auto text-lg font-normal">
+              <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">
                 Hear from students who have transformed their careers with NexoraMind.
               </p>
             </div>
@@ -498,7 +498,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
               >
-                <div className="p-7 h-full flex flex-col rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300">
+                <div className="p-7 h-full flex flex-col rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300">
                   {/* Stars */}
                   <div className="flex gap-0.5 mb-4">
                     {Array.from({ length: t.rating }).map((_, j) => (
@@ -507,16 +507,16 @@ export default function LandingPage() {
                   </div>
 
                   {/* Quote */}
-                  <p className="text-white/50 text-sm leading-relaxed flex-1 font-normal">"{t.text}"</p>
+                  <p className="text-slate-100 dark:text-white/50 text-sm leading-relaxed flex-1 font-normal">"{t.text}"</p>
 
                   {/* Author */}
-                  <div className="mt-5 pt-5 border-t border-white/[0.06] flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                  <div className="mt-5 pt-5 border-t border-slate-200 dark:border-white/[0.06] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-slate-950 dark:text-white text-sm font-bold shrink-0">
                       {t.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-white">{t.name}</p>
-                      <p className="text-xs text-white/30 truncate">{t.role} · {t.domain}</p>
+                      <p className="text-sm font-semibold text-slate-950 dark:text-white">{t.name}</p>
+                      <p className="text-xs text-slate-400 dark:text-white/30 truncate">{t.role} · {t.domain}</p>
                     </div>
                   </div>
                 </div>
@@ -527,14 +527,14 @@ export default function LandingPage() {
       </section>
 
       {/* ============ CTA ============ */}
-      <section className="relative py-28 overflow-hidden border-t border-white/[0.06]">
+      <section className="relative py-28 overflow-hidden border-t border-slate-200 dark:border-white/[0.06]">
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-secondary-500/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary-500/8 rounded-full blur-[120px]" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Section>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-950 dark:text-white leading-tight tracking-tight">
               Ready to Get{' '}
               <span style={{
                 background: 'linear-gradient(135deg, #59a3ff, #7028C0)',
@@ -543,7 +543,7 @@ export default function LandingPage() {
                 backgroundClip: 'text',
               }}>Certified</span>?
             </h2>
-            <p className="mt-6 text-lg text-white/50 max-w-xl mx-auto font-normal">
+            <p className="mt-6 text-lg text-slate-100 dark:text-white/50 max-w-xl mx-auto font-normal">
               Join hundreds of developers who have earned their certification through NexoraMind Tech.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -557,7 +557,7 @@ export default function LandingPage() {
                 </div>
               </Link>
               <Link to="/verify">
-                <div className="flex items-center gap-2.5 px-8 py-4 rounded-2xl border border-white/[0.15] text-white/80 text-base font-semibold hover:bg-white/[0.06] hover:border-white/[0.25] transition-all duration-300 cursor-pointer backdrop-blur-sm">
+                <div className="flex items-center gap-2.5 px-8 py-4 rounded-2xl border border-white/[0.15] text-slate-600 dark:text-white/80 text-base font-semibold hover:bg-slate-100 dark:bg-white/[0.06] hover:border-white/[0.25] transition-all duration-300 cursor-pointer backdrop-blur-sm">
                   <QrCode className="w-5 h-5" /> Verify Certificate
                 </div>
               </Link>

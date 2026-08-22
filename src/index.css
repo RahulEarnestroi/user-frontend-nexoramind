@@ -18,11 +18,23 @@
     -moz-osx-font-smoothing: grayscale;
     color: #1e293b;
     background: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body,
+  .dark {
+    color: #f1f5f9;
+    background: #000000;
   }
 
   ::selection {
     background-color: rgba(0, 128, 248, 0.2);
     color: #080860;
+  }
+
+  .dark ::selection {
+    background-color: rgba(0, 128, 248, 0.3);
+    color: #ffffff;
   }
 }
 
@@ -53,8 +65,17 @@
     background: linear-gradient(180deg, #f0f0ff 0%, #f8f9ff 100%);
   }
 
+  .dark .bg-gradient-subtle,
+  .bg-gradient-subtle-dark {
+    background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+  }
+
   .bg-gradient-card {
     background: linear-gradient(135deg, #eef6ff 0%, #f5f0ff 100%);
+  }
+
+  .dark .bg-gradient-card {
+    background: linear-gradient(135deg, rgba(0,128,248,0.05) 0%, rgba(112,40,192,0.03) 100%);
   }
 
   .bg-mesh {
@@ -64,6 +85,13 @@
       radial-gradient(at 50% 50%, rgba(8,8,96,0.04) 0px, transparent 50%);
   }
 
+  .dark .bg-mesh {
+    background-image:
+      radial-gradient(at 20% 20%, rgba(0,128,248,0.12) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(112,40,192,0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(8,8,96,0.06) 0px, transparent 50%);
+  }
+
   .bg-grid {
     background-image:
       linear-gradient(rgba(0,128,248,0.04) 1px, transparent 1px),
@@ -71,12 +99,27 @@
     background-size: 64px 64px;
   }
 
+  .dark .bg-grid {
+    background-image:
+      linear-gradient(rgba(0,128,248,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,128,248,0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
   .card-shadow {
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
 
+  .dark .card-shadow {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  }
+
   .card-shadow-lg {
     box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .dark .card-shadow-lg {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
   }
 
   .card-shadow-glow {
@@ -87,6 +130,10 @@
     background: rgba(255,255,255,0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+  }
+
+  .dark .glass {
+    background: rgba(8,8,96,0.6);
   }
 
   .glass-dark {
