@@ -163,8 +163,8 @@ export default function Navbar() {
               {/* Certifications Dropdown */}
               <div className="relative" onMouseEnter={() => handleMouseEnter('certifications')} onMouseLeave={handleMouseLeave}>
                 <button className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(activeDropdown === 'certifications')}`}>
-                  Certifications
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                  Offer Letters 
+                  {/* <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'certifications' ? 'rotate-180' : ''}`} /> */}
                 </button>
                 <Dropdown items={certificationLinks} isOpen={activeDropdown === 'certifications'} />
               </div>
@@ -179,7 +179,7 @@ export default function Navbar() {
               </div>
 
               <Link to="/verify" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/verify')}`}>
-                Verify
+                Certificates
               </Link>
 
               {/* More Dropdown */}
