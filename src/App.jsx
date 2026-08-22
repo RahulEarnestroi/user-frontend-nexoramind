@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
+import { ProfileProvider } from './context/ProfileContext';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Layouts
@@ -44,6 +47,7 @@ export default function App() {
   return (
     <ThemeProvider>
     <AuthProvider>
+    <ProfileProvider>
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
@@ -86,7 +90,20 @@ export default function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+    </ProfileProvider>
     </AuthProvider>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss={false}
+      draggable
+      pauseOnHover
+      theme="colored"
+    />
     </ThemeProvider>
   );
 }
