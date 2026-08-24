@@ -101,9 +101,11 @@ export default function Navbar() {
                   : 'bg-slate-900/[0.07] backdrop-blur-sm border border-slate-900/[0.08]'
                 : 'bg-slate-200/60 dark:bg-white/[0.05] border border-slate-300/60 dark:border-white/[0.08]'
             }`}>
-              <Link to="/" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/')}`}>
-                Home
-              </Link>
+              {!user && (
+                <Link to="/" className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${navText(location.pathname === '/')}`}>
+                  Home
+                </Link>
+              )}
 
               {/* Certifications Dropdown */}
               {/* <div className="relative" onMouseEnter={() => handleMouseEnter('certifications')} onMouseLeave={handleMouseLeave}>
@@ -220,13 +222,15 @@ export default function Navbar() {
           >
             <div className="px-3 pb-5 bg-white dark:bg-black border-t border-slate-100 dark:border-white/[0.06]">
               <div className="pt-3 space-y-1">
-                <Link to="/" onClick={() => setMobileOpen(false)}
-                  className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    location.pathname === '/'
-                      ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                      : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                >Home</Link>
+                {!user && (
+                  <Link to="/" onClick={() => setMobileOpen(false)}
+                    className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      location.pathname === '/'
+                        ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                        : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >Home</Link>
+                )}
 
                 {/* Certifications */}
                 <div>

@@ -16,6 +16,19 @@ const iconMap = {
   database: Database,
 };
 
+function formatDuration(raw) {
+  if (!raw) return '';
+  // Already readable (e.g. "3 Months")
+  if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
+  // Parse "3month" or "3month" into "3 Months"
+  const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    return `${n} ${n === 1 ? 'Month' : 'Months'}`;
+  }
+  return raw;
+}
+
 function normalizeRole(r) {
   return {
     roleId: r.RoleID ?? r.role_id ?? '',
@@ -24,11 +37,15 @@ function normalizeRole(r) {
     icon: r.Icon ?? r.icon ?? 'briefcase',
     color: r.Color ?? r.color ?? '#6366f1',
     skills: r.Skills ?? r.skills ?? [],
-    durations: (r.Durations ?? r.durations ?? []).map(d => ({
-      duration: d.Duration ?? d.duration ?? '',
-      taskCount: d.TaskCount ?? d.task_count ?? 0,
-      label: d.Label ?? d.label ?? d.Duration ?? d.duration ?? '',
-    })),
+    durations: (r.Durations ?? r.durations ?? []).map(d => {
+      const rawDuration = d.Duration ?? d.duration ?? '';
+      const rawLabel = d.Label ?? d.label ?? '';
+      return {
+        duration: rawDuration,
+        taskCount: d.TaskCount ?? d.task_count ?? 0,
+        label: rawLabel || formatDuration(rawDuration),
+      };
+    }),
     status: r.Status ?? r.status ?? 'ACTIVE',
   };
 }

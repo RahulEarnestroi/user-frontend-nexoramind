@@ -7,12 +7,16 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { api, extractList } from '../../services/api';
 
-const durationLabel = {
-  '1month': '1 Month',
-  '2month': '2 Months',
-  '3month': '3 Months',
-  '6month': '6 Months',
-};
+function formatDuration(raw) {
+  if (!raw) return '';
+  if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
+  const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    return `${n} ${n === 1 ? 'Month' : 'Months'}`;
+  }
+  return raw;
+}
 
 function normalizeCert(c) {
   return {
@@ -76,41 +80,31 @@ export default function PublicCertificatesPage() {
       if (!html) { toast.error('No certificate content available'); return; }
       toast.info('Generating PDF...');
 
-      // Create a hidden container — let the HTML use its own natural width (1020px)
-      const container = document.createElement('div');
-      container.innerHTML = html;
-      Object.assign(container.style, {
-        position: 'fixed',
-        top: '-9999px',
-        left: '-9999px',
-        background: '#fff',
-      });
-      document.body.appendChild(container);
+      // Create an iframe to render the full HTML document properly (fonts, styles, etc.)
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1020px;border:none;background:#fff;';
+      document.body.appendChild(iframe);
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
 
-      // Let the inner .certificate element dictate the size
-      const certEl = container.querySelector('.certificate') || container.firstElementChild;
-      const naturalWidth = certEl ? certEl.offsetWidth : 1020;
+      // Wait for fonts to load
+      await new Promise(r => setTimeout(r, 1500));
+      try {
+        await iframe.contentDocument.fonts.ready;
+      } catch {}
 
+      const target = iframe.contentDocument.querySelector('.certificate') || iframe.contentDocument.body;
       await html2pdf().set({
         margin: 0,
         filename: `Certificate-${cert.roleId}-${cert.duration}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          width: naturalWidth,
-          windowWidth: naturalWidth,
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'landscape',
-          compress: true,
-        },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
         pagebreak: { mode: ['css', 'legacy'] },
-      }).from(container).save();
+      }).from(target).save();
 
-      document.body.removeChild(container);
+      document.body.removeChild(iframe);
       toast.success('Certificate PDF downloaded!');
     } catch (err) {
       toast.error(err.message || 'Failed to download certificate');
@@ -200,7 +194,7 @@ export default function PublicCertificatesPage() {
                   </div>
 
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1 tracking-tight">{cert.roleName}</h3>
-                  <p className="text-sm text-slate-500 dark:text-white/40 mb-3">{cert.durationDisplay || durationLabel[cert.duration] || cert.duration}</p>
+                  <p className="text-sm text-slate-500 dark:text-white/40 mb-3">{cert.durationDisplay || formatDuration(cert.duration)}</p>
 
                   {cert.dateRange && (
                     <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-white/30 mb-3">

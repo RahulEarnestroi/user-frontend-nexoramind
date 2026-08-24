@@ -11,12 +11,16 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { api, extractList } from '../../services/api';
 
-const durationLabel = {
-  '1month': '1 Month',
-  '2month': '2 Months',
-  '3month': '3 Months',
-  '6month': '6 Months',
-};
+function formatDuration(raw) {
+  if (!raw) return '';
+  if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
+  const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    return `${n} ${n === 1 ? 'Month' : 'Months'}`;
+  }
+  return raw;
+}
 
 const difficultyConfig = {
   Easy: { label: 'Easy', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10', border: 'border-emerald-200 dark:border-emerald-500/20' },
@@ -227,6 +231,7 @@ export default function InternshipDetailPage() {
   // Progress from submit-task response
   const [approvedCount, setApprovedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [roleName, setRoleName] = useState('');
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -243,7 +248,20 @@ export default function InternshipDetailPage() {
       setTotalCount(normalized.length);
     } catch (err) {
       const msg = (err.message || '').toLowerCase();
-      if (msg.includes('not enrolled') || msg.includes('no enrollment') || msg.includes('not found') || msg.includes('400') || msg.includes('404')) {
+      if (msg.includes('already enrolled')) {
+        // Already enrolled but can't fetch tasks — show tasks page anyway
+        setNotEnrolled(false);
+        setTasks([]);
+        toast.info('Already enrolled. Loading your tasks...');
+        // Try to fetch tasks again since we're enrolled
+        try {
+          const retry = await api.getTasks(roleId, duration);
+          const raw = extractList(retry, 'tasks', 'data', 'result');
+          setTasks(raw.map(normalizeTask));
+        } catch {
+          setTasks([]);
+        }
+      } else if (msg.includes('not enrolled') || msg.includes('no enrollment') || msg.includes('not found') || msg.includes('400') || msg.includes('404')) {
         setNotEnrolled(true);
       } else {
         setError(err.message || 'Failed to load tasks');
@@ -251,6 +269,18 @@ export default function InternshipDetailPage() {
     } finally {
       setLoading(false);
     }
+  }, [roleId, duration]);
+
+  useEffect(() => {
+    // Fetch role name from roles API
+    api.getRoles().then(data => {
+      const roles = extractList(data, 'roles', 'data', 'result');
+      const match = roles.find(r =>
+        (r.RoleID ?? r.role_id) === roleId &&
+        (r.Durations ?? r.durations ?? []).some(d => (d.Duration ?? d.duration) === duration)
+      );
+      if (match) setRoleName(match.Name ?? match.name ?? match.role_name ?? roleId);
+    }).catch(() => {});
   }, [roleId, duration]);
 
   useEffect(() => {
@@ -270,7 +300,14 @@ export default function InternshipDetailPage() {
       setNotEnrolled(false);
       await fetchTasks();
     } catch (err) {
-      toast.error(err.message || 'Enrollment failed');
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('already enrolled')) {
+        toast.info('You are already enrolled. Loading tasks...');
+        setNotEnrolled(false);
+        await fetchTasks();
+      } else {
+        toast.error(err.message || 'Enrollment failed');
+      }
     } finally {
       setEnrolling(false);
     }
@@ -311,8 +348,8 @@ export default function InternshipDetailPage() {
               <Briefcase className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{roleId}</h1>
-          <p className="text-slate-500 dark:text-white/40 mt-2">Duration: {durationLabel[duration] || duration}</p>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{roleName || roleId}</h1>
+          <p className="text-slate-500 dark:text-white/40 mt-2">Duration: {formatDuration(duration)}</p>
         </motion.div>
 
         {/* Loading */}
