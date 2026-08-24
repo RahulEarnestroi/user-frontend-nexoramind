@@ -80,34 +80,70 @@ export default function PublicCertificatesPage() {
       if (!html) { toast.error('No certificate content available'); return; }
       toast.info('Generating PDF...');
 
-      // Create an iframe to render the full HTML document properly (fonts, styles, etc.)
+      // 1. Convert Logo.png to base64 so relative paths resolve in iframe
+      const logoRes = await fetch('/Logo.png');
+      const logoBlob = await logoRes.blob();
+      const logoBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(logoBlob);
+      });
+
+      // Replace all relative Logo.png references with base64 data URL
+      const fixedHtml = html
+        .replace(/src="Logo\.png"/g, `src="${logoBase64}"`)
+        .replace(/src='Logo\.png'/g, `src='${logoBase64}'`)
+        .replace(/url\(Logo\.png\)/g, `url(${logoBase64})`);
+
+      // 2. Create blob URL so the iframe gets a proper origin (fonts, CORS work)
+      const blob = new Blob([fixedHtml], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 3. Create iframe and load the blob URL
       const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1020px;border:none;background:#fff;';
+      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1020px;border:none;background:transparent;';
       document.body.appendChild(iframe);
-      iframe.contentDocument.open();
-      iframe.contentDocument.write(html);
-      iframe.contentDocument.close();
+      iframe.src = blobUrl;
 
-      // Wait for fonts to load
-      await new Promise(r => setTimeout(r, 1500));
-      try {
-        await iframe.contentDocument.fonts.ready;
-      } catch {}
+      // 4. Wait for iframe load + fonts
+      await new Promise(r => { iframe.onload = r; });
+      await new Promise(r => setTimeout(r, 2000));
+      try { await iframe.contentDocument.fonts.ready; } catch {}
 
-      const target = iframe.contentDocument.querySelector('.certificate') || iframe.contentDocument.body;
+      // 5. Find the certificate element and capture
+      const doc = iframe.contentDocument;
+      const target = doc.querySelector('.certificate') || doc.body;
+      if (!target) throw new Error('Certificate element not found');
+
       await html2pdf().set({
         margin: 0,
         filename: `Certificate-${cert.roleId}-${cert.duration}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
-        pagebreak: { mode: ['css', 'legacy'] },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          width: target.scrollWidth,
+          height: target.scrollHeight,
+          windowWidth: target.scrollWidth,
+          windowHeight: target.scrollHeight,
+        },
+        jsPDF: {
+          unit: 'px',
+          format: [target.scrollWidth / 2, target.scrollHeight / 2],
+          orientation: 'landscape',
+          hotfixes: ['px_scaling'],
+        },
       }).from(target).save();
 
+      // 6. Cleanup
+      URL.revokeObjectURL(blobUrl);
       document.body.removeChild(iframe);
       toast.success('Certificate PDF downloaded!');
     } catch (err) {
       toast.error(err.message || 'Failed to download certificate');
+      console.error('Certificate PDF error:', err);
     }
   }, []);
 
