@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Briefcase, Server, Layout, Brain, Database,
-  Loader2, AlertCircle
+  Loader2, AlertCircle, CheckCircle2, Clock
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import { api, extractList } from '../../services/api';
@@ -18,9 +19,7 @@ const iconMap = {
 
 function formatDuration(raw) {
   if (!raw) return '';
-  // Already readable (e.g. "3 Months")
   if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
-  // Parse "3month" or "3month" into "3 Months"
   const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
   if (m) {
     const n = parseInt(m[1], 10);
@@ -57,6 +56,7 @@ export default function InternshipsPage() {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [enrollingId, setEnrollingId] = useState(null);
 
   useEffect(() => {
     api.getRoles()
@@ -67,6 +67,47 @@ export default function InternshipsPage() {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  // Build flat list: each card = one role + one duration
+  const cards = [];
+  roles.forEach(role => {
+    role.durations.forEach(d => {
+      cards.push({
+        key: `${role.roleId}-${d.duration}`,
+        roleId: role.roleId,
+        roleName: role.name,
+        duration: d.duration,
+        durationLabel: d.label || formatDuration(d.duration),
+        taskCount: d.taskCount,
+        description: role.description,
+        skills: role.skills,
+        icon: role.icon,
+        color: role.color,
+      });
+    });
+  });
+
+  const handleEnroll = async (card) => {
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (meStatus === false) { navigate('/login'); return; }
+
+    setEnrollingId(card.key);
+    try {
+      await api.enroll(card.roleId, card.duration);
+      toast.success(`Enrolled in ${card.roleName} (${card.durationLabel})!`);
+      navigate(`/internships/${card.roleId}/${card.duration}`);
+    } catch (err) {
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('already enrolled')) {
+        toast.info(`Already enrolled in ${card.roleName}. Loading tasks...`);
+        navigate(`/internships/${card.roleId}/${card.duration}`);
+      } else {
+        toast.error(err.message || 'Enrollment failed');
+      }
+    } finally {
+      setEnrollingId(null);
+    }
+  };
 
   return (
     <div className="py-20 bg-white dark:bg-black min-h-screen">
@@ -98,74 +139,94 @@ export default function InternshipsPage() {
           </div>
         )}
 
-        {/* Role Cards */}
+        {/* Cards Grid - 3 columns */}
         {!loading && !error && (
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {roles.map((role, i) => {
-              const IconComp = iconMap[role.icon] || Briefcase;
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {cards.map((card, i) => {
+              const IconComp = iconMap[card.icon] || Briefcase;
+              const isThisEnrolling = enrollingId === card.key;
+
               return (
                 <motion.div
-                  key={role.roleId || i}
+                  key={card.key}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  transition={{ delay: i * 0.05, duration: 0.5 }}
                   className="p-6 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 flex flex-col"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div
-                      className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                      style={{ backgroundColor: `${role.color}15`, border: `1px solid ${role.color}25` }}
-                    >
-                      <IconComp className="w-5 h-5" style={{ color: role.color }} />
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: `${card.color}15`, border: `1px solid ${card.color}25` }}
+                      >
+                        <IconComp className="w-5 h-5" style={{ color: card.color }} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">{card.roleName}</h3>
+                        <span className="text-[11px] font-semibold text-primary-600 dark:text-primary-400">{card.durationLabel}</span>
+                      </div>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">
                       Active
                     </span>
                   </div>
 
-                  {/* Name & Description */}
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">{role.name}</h3>
-                  <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed mb-4 font-normal">{role.description}</p>
+                  {/* Description */}
+                  <p className="text-xs text-slate-500 dark:text-white/40 leading-relaxed mb-3 font-normal line-clamp-2">{card.description}</p>
 
                   {/* Skills */}
-                  {role.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {role.skills.slice(0, 5).map((skill, j) => (
-                        <span key={j} className="px-2 py-0.5 text-[11px] rounded-md bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 border border-slate-200 dark:border-white/[0.06] font-medium">
+                  {card.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {card.skills.slice(0, 3).map((skill, j) => (
+                        <span key={j} className="px-2 py-0.5 text-[10px] rounded-md bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 border border-slate-200 dark:border-white/[0.06] font-medium">
                           {skill}
                         </span>
                       ))}
-                      {role.skills.length > 5 && (
-                        <span className="px-2 py-0.5 text-[11px] rounded-md text-slate-400 dark:text-white/30 font-medium">
-                          +{role.skills.length - 5} more
+                      {card.skills.length > 3 && (
+                        <span className="px-2 py-0.5 text-[10px] rounded-md text-slate-400 dark:text-white/30 font-medium">
+                          +{card.skills.length - 3}
                         </span>
                       )}
                     </div>
                   )}
 
-                  {/* Duration Options */}
+                  {/* Meta */}
+                  <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-white/30 mb-4">
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {card.durationLabel}</span>
+                    <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> {card.taskCount} tasks</span>
+                  </div>
+
+                  {/* Action Button */}
                   <div className="mt-auto">
-                    <p className="text-xs font-medium text-slate-400 dark:text-white/30 mb-2 uppercase tracking-wider">Choose Duration</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {role.durations.map((d) => {
-                        const handleClick = () => {
-                          if (!isAuthenticated) { navigate('/login'); return; }
-                          if (meStatus === false) { navigate('/login'); return; }
-                          navigate(`/internships/${role.roleId}/${d.duration}`);
-                        };
-                        return (
-                          <button
-                            key={d.duration}
-                            onClick={handleClick}
-                            className="flex flex-col items-center gap-0.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:border-primary-200 dark:hover:border-primary-500/20 hover:text-primary-600 dark:hover:text-primary-400 text-slate-600 dark:text-white/50 transition-all group"
-                          >
-                            <span className="text-sm font-semibold">{d.label || d.duration}</span>
-                            <span className="text-[10px] text-slate-400 dark:text-white/30 group-hover:text-primary-500 dark:group-hover:text-primary-400">{d.taskCount} tasks</span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {!isAuthenticated ? (
+                      <button
+                        onClick={() => navigate('/login')}
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all"
+                      >
+                        Login to Enroll
+                      </button>
+                    ) : meStatus === false ? (
+                      <button
+                        onClick={() => navigate('/login')}
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all"
+                      >
+                        Get Internship
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEnroll(card)}
+                        disabled={isThisEnrolling}
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {isThisEnrolling ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Enrolling...</>
+                        ) : (
+                          'Enroll Now'
+                        )}
+                      </button>
+                    )}
                   </div>
                 </motion.div>
               );
@@ -174,7 +235,7 @@ export default function InternshipsPage() {
         )}
 
         {/* Empty */}
-        {!loading && !error && roles.length === 0 && (
+        {!loading && !error && cards.length === 0 && (
           <div className="text-center py-16">
             <Briefcase className="w-12 h-12 text-slate-200 dark:text-white/10 mx-auto mb-4" />
             <p className="text-slate-400 dark:text-white/30 text-sm">No internship roles available at the moment.</p>

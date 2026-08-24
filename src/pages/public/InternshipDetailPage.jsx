@@ -372,7 +372,7 @@ export default function InternshipDetailPage() {
         )}
 
         {/* Not Enrolled */}
-        {!loading  && (
+        {/* {!loading  && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="p-8 rounded-2xl bg-primary-50 dark:bg-primary-500/5 border border-primary-200 dark:border-primary-500/15 text-center">
               <Users className="w-10 h-10 text-primary-600 dark:text-primary-400 mx-auto mb-3" />
@@ -390,7 +390,7 @@ export default function InternshipDetailPage() {
               </button>
             </div>
           </motion.div>
-        )}
+        )} */}
 
         {/* Tasks */}
         {!loading && !error && !notEnrolled && tasks.length > 0 && (
