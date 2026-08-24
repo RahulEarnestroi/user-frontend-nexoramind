@@ -22,6 +22,7 @@ import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
 import TermsAndConditions from './pages/public/TermsAndConditions';
 import PrivacyPolicy from './pages/public/PrivacyPolicy';
+import NotFoundPage from './pages/public/NotFoundPage';
 import OfferLettersPage from './pages/public/OfferLettersPage';
 import PublicCertificatesPage from './pages/public/PublicCertificatesPage';
 
@@ -94,6 +95,9 @@ export default function App() {
           {/* Legal Pages */}
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+
+          {/* Catch All */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </ProfileProvider>
