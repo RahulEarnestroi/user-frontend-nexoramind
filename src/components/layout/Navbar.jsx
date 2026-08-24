@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight, ChevronDown, Shield, Award, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,40 +16,6 @@ const certificationLinks = [
   { to: '/certifications/datascience', label: 'Data Science & ML', desc: 'Python, TensorFlow', icon: Shield },
   { to: '/certifications/cloud', label: 'Cloud Computing', desc: 'AWS, Azure, GCP', icon: Shield },
 ];
-
-/* ─── Dropdown Component ────────────────────────────────── */
-
-function Dropdown({ items, isOpen }) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 8, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 8, scale: 0.96 }}
-          transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-2xl bg-white dark:bg-[#111] border border-slate-200/60 dark:border-white/[0.08] shadow-2xl shadow-black/8 p-2 z-50"
-        >
-          {items.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors duration-150 group"
-            >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-primary-500/15 dark:to-secondary-500/15 flex items-center justify-center shrink-0 group-hover:from-primary-100 group-hover:to-secondary-100 dark:group-hover:from-primary-500/25 dark:group-hover:to-secondary-500/25 transition-all">
-                <item.icon className="w-4 h-4 text-primary-500 dark:text-primary-400" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{item.label}</p>
-                <p className="text-xs text-slate-400 dark:text-white/35 font-medium">{item.desc}</p>
-              </div>
-            </Link>
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 /* ─── Theme Toggle Button ───────────────────────────────── */
 
@@ -71,15 +37,16 @@ function ThemeToggle({ className = '' }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
   const [expandedMobile, setExpandedMobile] = useState(null);
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { clearProfile } = useProfile();
+  const { profileData, clearProfile } = useProfile();
+  const userName = profileData?.full_name || user?.full_name || user?.FullName || user?.email?.split('@')[0] || 'User';
+  const userId = profileData?.user_id || user?.user_id || user?.UserID || '';
+  const initial = userName.charAt(0).toUpperCase();
   const { theme } = useTheme();
   const isHeroPage = location.pathname === '/';
   const isDarkMode = theme === 'dark';
-  const dropdownTimeout = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -89,7 +56,6 @@ export default function Navbar() {
 
   useEffect(() => {
     setMobileOpen(false);
-    setActiveDropdown(null);
   }, [location]);
 
   const isTransparent = isHeroPage && !scrolled;
@@ -104,15 +70,6 @@ export default function Navbar() {
     return active
       ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10'
       : 'text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/[0.06]';
-  };
-
-  const handleMouseEnter = (key) => {
-    clearTimeout(dropdownTimeout.current);
-    setActiveDropdown(key);
-  };
-
-  const handleMouseLeave = () => {
-    dropdownTimeout.current = setTimeout(() => setActiveDropdown(null), 120);
   };
 
   const toggleMobileSection = (key) => {
@@ -185,19 +142,28 @@ export default function Navbar() {
             <ThemeToggle className={isTransparent ? (isDarkMode ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-900 hover:bg-white/50') : 'text-slate-400 dark:text-white/50 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'} />
 
             {user ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Link
                   to={user.role === 'ADMIN' || user.role === 'ISSUER' ? '/admin/dashboard' : '/student/dashboard'}
-                  className={`text-sm font-medium transition-colors px-3 py-2 rounded-xl ${
-                    isTransparent ? (isDarkMode ? 'text-white/70 hover:text-white' : 'text-slate-600 hover:text-slate-900') : 'text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]'
+                  className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+                    isTransparent
+                      ? (isDarkMode ? 'hover:bg-white/[0.08]' : 'hover:bg-white/[0.5]')
+                      : 'hover:bg-slate-100 dark:hover:bg-white/[0.06]'
                   }`}
                 >
-                  Dashboard
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    {initial}
+                  </div>
+                  <div className="hidden xl:block leading-none">
+                    <p className={`text-sm font-semibold ${isTransparent ? (isDarkMode ? 'text-white' : 'text-slate-900') : 'text-slate-800 dark:text-white'}`}>{userName}</p>
+                    {userId && <p className={`text-[10px] font-medium ${isTransparent ? (isDarkMode ? 'text-white/40' : 'text-slate-400') : 'text-slate-400 dark:text-white/30'}`}>{userId}</p>}
+                  </div>
                 </Link>
+                <div className={`w-px h-5 ${isTransparent ? (isDarkMode ? 'bg-white/15' : 'bg-slate-300/50') : 'bg-slate-200 dark:bg-white/[0.08]'}`} />
                 <button
                   onClick={() => { logout(); clearProfile(); }}
-                  className={`text-sm font-medium transition-colors px-3 py-2 rounded-xl ${
-                    isTransparent ? (isDarkMode ? 'text-white/50 hover:text-white hover:bg-white/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50/50') : 'text-slate-400 dark:text-white/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
+                  className={`text-xs font-medium transition-colors px-3 py-2 rounded-xl ${
+                    isTransparent ? (isDarkMode ? 'text-white/50 hover:text-red-400 hover:bg-white/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50/50') : 'text-slate-400 dark:text-white/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
                   }`}
                 >
                   Logout
@@ -338,6 +304,16 @@ export default function Navbar() {
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.06]">
                   {user ? (
                     <div className="space-y-1.5">
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-base font-bold shadow-sm">
+                          {initial}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{userName}</p>
+                          {userId && <p className="text-[11px] text-slate-400 dark:text-white/30 font-medium">{userId}</p>}
+                        </div>
+                      </div>
+                      <div className="border-t border-slate-100 dark:border-white/[0.06]" />
                       <Link to={user.role === 'ADMIN' || user.role === 'ISSUER' ? '/admin/dashboard' : '/student/dashboard'}
                         onClick={() => setMobileOpen(false)}
                         className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-all"

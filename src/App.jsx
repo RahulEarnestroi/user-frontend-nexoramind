@@ -59,7 +59,7 @@ export default function App() {
             <Route path="/certifications" element={<CertificationsPage />} />
             <Route path="/certifications/:slug" element={<CertificationDetailPage />} />
             <Route path="/internships" element={<InternshipsPage />} />
-            <Route path="/internships/:id" element={<InternshipDetailPage />} />
+            <Route path="/internships/:roleId/:duration" element={<InternshipDetailPage />} />
             <Route path="/verify" element={<VerifyPage />} />
             <Route path="/verify/:certificateId" element={<CertificateVerifyPage />} />
             <Route path="/about" element={<AboutPage />} />

@@ -1,20 +1,55 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Briefcase, Clock, MapPin, ChevronRight, Building2, Download, FileText } from 'lucide-react';
-import { internships } from '../../data/mockData';
+import {
+  Briefcase, Server, Layout, Brain, Database,
+  Loader2, AlertCircle
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
-import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
+import { api, extractList } from '../../services/api';
+
+const iconMap = {
+  server: Server,
+  layout: Layout,
+  brain: Brain,
+  database: Database,
+};
+
+function normalizeRole(r) {
+  return {
+    roleId: r.RoleID ?? r.role_id ?? '',
+    name: r.Name ?? r.name ?? r.role_name ?? '',
+    description: r.Description ?? r.description ?? '',
+    icon: r.Icon ?? r.icon ?? 'briefcase',
+    color: r.Color ?? r.color ?? '#6366f1',
+    skills: r.Skills ?? r.skills ?? [],
+    durations: (r.Durations ?? r.durations ?? []).map(d => ({
+      duration: d.Duration ?? d.duration ?? '',
+      taskCount: d.TaskCount ?? d.task_count ?? 0,
+      label: d.Label ?? d.label ?? d.Duration ?? d.duration ?? '',
+    })),
+    status: r.Status ?? r.status ?? 'ACTIVE',
+  };
+}
 
 export default function InternshipsPage() {
   const { isAuthenticated } = useAuth();
   const { meStatus } = useProfile();
   const navigate = useNavigate();
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleGetInternship = () => {
-    navigate('/login');
-  };
+  useEffect(() => {
+    api.getRoles()
+      .then(data => {
+        const raw = extractList(data, 'roles', 'data', 'result');
+        setRoles(raw.map(normalizeRole).filter(r => r.status.toUpperCase() === 'ACTIVE'));
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="py-20 bg-white dark:bg-black min-h-screen">
@@ -29,81 +64,105 @@ export default function InternshipsPage() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {internships.map((internship, i) => (
-            <motion.div key={internship.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }}>
-              <Card hover className="p-6 h-full flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-11 h-11 bg-gradient-to-br from-primary-500/15 to-secondary-500/15 rounded-2xl flex items-center justify-center">
-                    <Briefcase className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+        {/* Loading */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
+            <p className="text-slate-500 dark:text-white/40 text-sm">Loading roles...</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-8 h-8 text-red-500 mb-4" />
+            <p className="text-red-500 dark:text-red-400 text-sm mb-2">Failed to load internship roles</p>
+            <p className="text-slate-400 dark:text-white/30 text-xs">{error}</p>
+          </div>
+        )}
+
+        {/* Role Cards */}
+        {!loading && !error && (
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {roles.map((role, i) => {
+              const IconComp = iconMap[role.icon] || Briefcase;
+              return (
+                <motion.div
+                  key={role.roleId || i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="p-6 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300 flex flex-col"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                      style={{ backgroundColor: `${role.color}15`, border: `1px solid ${role.color}25` }}
+                    >
+                      <IconComp className="w-5 h-5" style={{ color: role.color }} />
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20">
+                      Active
+                    </span>
                   </div>
-                  <Badge variant="success">{internship.status}</Badge>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">{internship.title}</h3>
-                <div className="flex items-center gap-2 mb-3">
-                  <Building2 className="w-4 h-4 text-slate-400 dark:text-white/30" />
-                  <span className="text-sm text-slate-500 dark:text-white/40">{internship.company}</span>
-                </div>
-                <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed mb-4 flex-1 font-normal">{internship.description}</p>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-white/30 mb-4">
-                  <div className="flex items-center gap-1"><Clock className="w-4 h-4" /> {internship.duration}</div>
-                  <div className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {internship.location}</div>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {internship.requirements.map(req => (
-                    <span key={req} className="px-2 py-0.5 bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 rounded-md text-xs font-medium border border-slate-200 dark:border-white/[0.06]">{req}</span>
-                  ))}
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-2">
-                  {/* Not logged in → show Get Internship → redirect to /login */}
-                  {!isAuthenticated && (
-                    <button
-                      onClick={handleGetInternship}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all"
-                    >
-                      Get Internship <ChevronRight className="w-4 h-4" />
-                    </button>
+                  {/* Name & Description */}
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 tracking-tight">{role.name}</h3>
+                  <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed mb-4 font-normal">{role.description}</p>
+
+                  {/* Skills */}
+                  {role.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {role.skills.slice(0, 5).map((skill, j) => (
+                        <span key={j} className="px-2 py-0.5 text-[11px] rounded-md bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-white/50 border border-slate-200 dark:border-white/[0.06] font-medium">
+                          {skill}
+                        </span>
+                      ))}
+                      {role.skills.length > 5 && (
+                        <span className="px-2 py-0.5 text-[11px] rounded-md text-slate-400 dark:text-white/30 font-medium">
+                          +{role.skills.length - 5} more
+                        </span>
+                      )}
+                    </div>
                   )}
 
-                  {/* Logged in + meStatus is true → show View Tasks, Certificate, Offer Letter */}
-                  {isAuthenticated && meStatus === true && (
-                    <>
-                      <Link to={`/internships/${internship.id}`}>
-                        <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
-                          View Tasks <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </Link>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link to={`/certificates-list`}>
-                          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
-                            <Download className="w-3.5 h-3.5" /> Certificate
+                  {/* Duration Options */}
+                  <div className="mt-auto">
+                    <p className="text-xs font-medium text-slate-400 dark:text-white/30 mb-2 uppercase tracking-wider">Choose Duration</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {role.durations.map((d) => {
+                        const handleClick = () => {
+                          if (!isAuthenticated) { navigate('/login'); return; }
+                          if (meStatus === false) { navigate('/login'); return; }
+                          navigate(`/internships/${role.roleId}/${d.duration}`);
+                        };
+                        return (
+                          <button
+                            key={d.duration}
+                            onClick={handleClick}
+                            className="flex flex-col items-center gap-0.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:border-primary-200 dark:hover:border-primary-500/20 hover:text-primary-600 dark:hover:text-primary-400 text-slate-600 dark:text-white/50 transition-all group"
+                          >
+                            <span className="text-sm font-semibold">{d.label || d.duration}</span>
+                            <span className="text-[10px] text-slate-400 dark:text-white/30 group-hover:text-primary-500 dark:group-hover:text-primary-400">{d.taskCount} tasks</span>
                           </button>
-                        </Link>
-                        <Link to={`/offer-letters`}>
-                          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-white/60 text-sm font-medium hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-all">
-                            <FileText className="w-3.5 h-3.5" /> Offer Letter
-                          </button>
-                        </Link>
-                      </div>
-                    </>
-                  )}
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
-                  {/* Logged in + meStatus is false → show Get Internship */}
-                  {isAuthenticated && meStatus === false && (
-                    <button
-                      onClick={handleGetInternship}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all"
-                    >
-                      Get Internship <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        {/* Empty */}
+        {!loading && !error && roles.length === 0 && (
+          <div className="text-center py-16">
+            <Briefcase className="w-12 h-12 text-slate-200 dark:text-white/10 mx-auto mb-4" />
+            <p className="text-slate-400 dark:text-white/30 text-sm">No internship roles available at the moment.</p>
+          </div>
+        )}
       </div>
     </div>
   );

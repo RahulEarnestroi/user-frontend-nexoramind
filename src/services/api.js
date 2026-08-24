@@ -22,7 +22,25 @@ async function request(path, options = {}) {
   return data;
 }
 
+/** Extract an array from a response that could be [], { key: [] }, or nested. */
+function extractList(data, ...keys) {
+  if (Array.isArray(data)) return data;
+  for (const k of keys) {
+    if (Array.isArray(data?.[k])) return data[k];
+  }
+  // Last resort: find first array value
+  if (data && typeof data === 'object') {
+    for (const v of Object.values(data)) {
+      if (Array.isArray(v)) return v;
+    }
+  }
+  return [];
+}
+
+export { extractList };
+
 export const api = {
+  // ─── Auth ─────────────────────────────────────────
   login: (email, password) =>
     request('/nm/account/login', {
       method: 'POST',
@@ -36,4 +54,34 @@ export const api = {
     }),
 
   me: () => request('/nm/account/me'),
+
+  // ─── Internship ───────────────────────────────────
+  getRoles: () => request('/nm/internship/roles'),
+
+  getTasks: (roleId, duration) =>
+    request(`/nm/internship/tasks?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
+
+  enroll: (roleId, duration) =>
+    request('/nm/internship/enroll', {
+      method: 'POST',
+      body: JSON.stringify({ RoleID: roleId, Duration: duration }),
+    }),
+
+  submitTask: (githubLink, roleId, duration, taskNumber) =>
+    request('/nm/internship/submit-task', {
+      method: 'POST',
+      body: JSON.stringify({ GitHubLink: githubLink, RoleID: roleId, Duration: duration, TaskNumber: taskNumber }),
+    }),
+
+  // ─── Certificates ─────────────────────────────────
+  getCertificate: (roleId, duration) =>
+    request(`/nm/internship/certificate?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
+
+  listCertificates: () => request('/nm/internship/certificates'),
+
+  // ─── Offer Letters ────────────────────────────────
+  getOfferLetter: (roleId, duration) =>
+    request(`/nm/internship/offer-letter?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
+
+  listOfferLetters: () => request('/nm/internship/offer-letters'),
 };
