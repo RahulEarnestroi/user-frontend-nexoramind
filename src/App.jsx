@@ -20,6 +20,8 @@ import VerifyPage from './pages/public/VerifyPage';
 import CertificateVerifyPage from './pages/public/CertificateVerifyPage';
 import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
+import TermsAndConditions from './pages/public/TermsAndConditions';
+import PrivacyPolicy from './pages/public/PrivacyPolicy';
 import OfferLettersPage from './pages/public/OfferLettersPage';
 import PublicCertificatesPage from './pages/public/PublicCertificatesPage';
 
@@ -88,6 +90,10 @@ export default function App() {
             <Route path="/student/certificates" element={<StudentCertificates />} />
             <Route path="/student/certificates/:id" element={<StudentCertificateDetail />} />
           </Route>
+
+          {/* Legal Pages */}
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </BrowserRouter>
     </ProfileProvider>

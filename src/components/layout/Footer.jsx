@@ -33,6 +33,13 @@ const footerSections = [
       { to: '/about', label: 'About NexoraMind' },
     ],
   },
+  {
+    title: 'Legal',
+    links: [
+      { to: '/terms', label: 'Terms & Conditions' },
+      { to: '/privacy', label: 'Privacy Policy' },
+    ],
+  },
 ];
 
 export default function Footer() {
@@ -75,7 +82,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 py-12 border-b border-slate-200 dark:border-white/[0.06]">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-12 border-b border-slate-200 dark:border-white/[0.06]">
           {footerSections.map((section) => (
             <div key={section.title}>
               <h4 className="text-slate-900 dark:text-white font-semibold text-sm mb-4 tracking-wide">{section.title}</h4>
