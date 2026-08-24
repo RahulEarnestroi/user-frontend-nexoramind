@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Download, Calendar, Search, Briefcase, CheckCircle2, Loader2, AlertCircle, X, ExternalLink, ArrowLeft } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { api, extractList } from '../../services/api';
@@ -79,9 +78,8 @@ export default function OfferLettersPage() {
       const data = await api.getOfferLetter(ol.roleId, ol.duration);
       const html = data.RenderedHTML ?? data.renderedHTML ?? data.rendered_html ?? data.html ?? '';
       if (!html) { toast.error('No offer letter content available'); return; }
-      toast.info('Generating PDF...');
 
-      // 1. Convert Logo.png to base64 so relative paths resolve in iframe
+      // 1. Convert Logo.png to base64 so relative paths resolve
       const logoRes = await fetch('/Logo.png');
       const logoBlob = await logoRes.blob();
       const logoBase64 = await new Promise((resolve) => {
@@ -95,54 +93,40 @@ export default function OfferLettersPage() {
         .replace(/src='Logo\.png'/g, `src='${logoBase64}'`)
         .replace(/url\(Logo\.png\)/g, `url(${logoBase64})`);
 
-      // 2. Create blob URL so the iframe gets a proper origin
-      const blob = new Blob([fixedHtml], { type: 'text/html;charset=utf-8' });
+      // 2. Add print-friendly CSS and auto-print script
+      const printReadyHtml = fixedHtml.replace(
+        '</head>',
+        `<style>
+          @media print {
+            body { background: #fff !important; padding: 0 !important; margin: 0 !important; min-height: auto !important; display: block !important; justify-content: unset !important; align-items: unset !important; }
+            .document { box-shadow: none !important; border-radius: 0 !important; margin: 0 auto !important; page-break-inside: avoid; }
+          }
+        </style>
+        <script>
+          window.onload = function() {
+            document.fonts.ready.then(function() {
+              setTimeout(function() { window.print(); }, 300);
+            });
+          };
+        </script>
+        </head>`
+      );
+
+      // 3. Create blob URL with proper origin for fonts
+      const blob = new Blob([printReadyHtml], { type: 'text/html;charset=utf-8' });
       const blobUrl = URL.createObjectURL(blob);
 
-      // 3. Create iframe and load the blob URL
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:820px;border:none;background:transparent;';
-      document.body.appendChild(iframe);
-      iframe.src = blobUrl;
+      // 4. Open in a new window — browser renders it perfectly
+      const printWindow = window.open(blobUrl, '_blank');
+      if (!printWindow) {
+        toast.warning('Popup blocked. Please allow popups for this site and try again.');
+        URL.revokeObjectURL(blobUrl);
+        return;
+      }
 
-      // 4. Wait for iframe load + fonts
-      await new Promise(r => { iframe.onload = r; });
-      await new Promise(r => setTimeout(r, 2000));
-      try { await iframe.contentDocument.fonts.ready; } catch {}
-
-      // 5. Find the document element and capture
-      const doc = iframe.contentDocument;
-      const target = doc.querySelector('.document') || doc.body;
-      if (!target) throw new Error('Document element not found');
-
-      await html2pdf().set({
-        margin: 0,
-        filename: `OfferLetter-${ol.roleId}-${ol.duration}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          width: target.scrollWidth,
-          height: target.scrollHeight,
-          windowWidth: target.scrollWidth,
-          windowHeight: target.scrollHeight,
-        },
-        jsPDF: {
-          unit: 'px',
-          format: [target.scrollWidth / 2, target.scrollHeight / 2],
-          orientation: 'portrait',
-          hotfixes: ['px_scaling'],
-        },
-      }).from(target).save();
-
-      // 6. Cleanup
-      URL.revokeObjectURL(blobUrl);
-      document.body.removeChild(iframe);
-      toast.success('Offer letter PDF downloaded!');
+      toast.success('Opening print dialog — select "Save as PDF" to download.');
     } catch (err) {
-      toast.error(err.message || 'Failed to download offer letter');
+      toast.error(err.message || 'Failed to prepare offer letter');
       console.error('Offer letter PDF error:', err);
     }
   }, []);
