@@ -55,7 +55,7 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
+       
             <Route path="/certifications" element={<CertificationsPage />} />
             <Route path="/certifications/:slug" element={<CertificationDetailPage />} />
             <Route path="/internships" element={<InternshipsPage />} />
@@ -69,7 +69,7 @@ export default function App() {
           </Route>
 
           {/* Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Admin Routes */}
