@@ -636,7 +636,7 @@ export default function InternshipDetailPage() {
             <AlertCircle className="w-8 h-8 text-red-500 mb-4" />
             <p className="text-red-500 dark:text-red-400 text-sm mb-4">{error}</p>
             {!isAuthenticated ? (
-              <Link to="/login" className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">Log In</Link>
+              <Link to="/" className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">Log In</Link>
             ) : (
               <button onClick={fetchTasks} className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-sm font-semibold hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all">Retry</button>
             )}

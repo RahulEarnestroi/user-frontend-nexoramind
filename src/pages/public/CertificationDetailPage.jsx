@@ -57,7 +57,7 @@ export default function CertificationDetailPage() {
             <div className="flex items-center gap-1"><BarChart3 className="w-4 h-4" /> Passing Score: {cert.passingScore}%</div>
           </div>
           <div className="mt-6">
-            <Link to="/login"><Button size="lg">Start Certification <ChevronRight className="w-5 h-5" /></Button></Link>
+            <Link to="/"><Button size="lg">Start Certification <ChevronRight className="w-5 h-5" /></Button></Link>
           </div>
         </motion.div>
 

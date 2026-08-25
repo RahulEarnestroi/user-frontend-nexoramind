@@ -156,7 +156,7 @@ export default function PublicCertificatesPage() {
           <div className="text-center py-16">
             <Award className="w-12 h-12 text-slate-200 dark:text-white/10 mx-auto mb-4" />
             <p className="text-slate-500 dark:text-white/40 text-sm mb-4">Please log in to view your certificates.</p>
-            <Link to="/login" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
+            <Link to="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
               Log In
             </Link>
           </div>

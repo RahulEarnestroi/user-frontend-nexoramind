@@ -37,7 +37,7 @@ export default function Sidebar({ open, onClose }) {
     logout();
     clearProfile();
     onClose();
-    navigate('/login');
+    navigate('/');
   };
 
   const sidebarContent = (

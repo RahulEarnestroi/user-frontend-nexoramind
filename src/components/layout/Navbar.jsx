@@ -164,7 +164,7 @@ export default function Navbar() {
                 </Link>
                 <div className={`w-px h-5 ${isTransparent ? (isDarkMode ? 'bg-white/15' : 'bg-slate-300/50') : 'bg-slate-200 dark:bg-white/[0.08]'}`} />
                 <button
-                  onClick={() => { logout(); clearProfile(); navigate('/login'); }}
+                  onClick={() => { logout(); clearProfile(); navigate('/'); }}
                   className={`text-xs font-medium transition-colors px-3 py-2 rounded-xl ${
                     isTransparent ? (isDarkMode ? 'text-white/50 hover:text-red-400 hover:bg-white/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50/50') : 'text-slate-400 dark:text-white/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
                   }`}
@@ -174,7 +174,7 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Link to="/login">
+                <Link to="/">
                   <button className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isTransparent
                       ? (isDarkMode ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50')
@@ -326,13 +326,13 @@ export default function Navbar() {
                         <span>Dashboard</span>
                         <ChevronRight className="w-4 h-4 text-slate-300 dark:text-white/20" />
                       </Link>
-                      <button onClick={() => { logout(); clearProfile(); setMobileOpen(false); navigate('/login'); }}
+                      <button onClick={() => { logout(); clearProfile(); setMobileOpen(false); navigate('/'); }}
                         className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                       >Logout</button>
                     </div>
                   ) : (
                     <div className="space-y-2.5">
-                      <Link to="/login" onClick={() => setMobileOpen(false)}
+                      <Link to="/" onClick={() => setMobileOpen(false)}
                         className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-white/70 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all border border-slate-200 dark:border-white/[0.08]"
                       >Login</Link>
                       <Link to="/register" onClick={() => setMobileOpen(false)}

@@ -27,7 +27,7 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
 
   if (!user || (user.role !== 'ADMIN' && user.role !== 'ISSUER')) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (

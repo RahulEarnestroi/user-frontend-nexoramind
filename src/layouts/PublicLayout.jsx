@@ -62,7 +62,7 @@ function DashboardNavbar({ onMenuClick }) {
   const handleLogout = () => {
     logout();
     clearProfile();
-    navigate('/login');
+    navigate('/');
   };
 
   return (

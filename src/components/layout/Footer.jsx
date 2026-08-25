@@ -27,7 +27,7 @@ const footerSections = [
   {
     title: 'Account',
     links: [
-      { to: '/login', label: 'Login' },
+      { to: '/', label: 'Login' },
       { to: '/register', label: 'Register' },
       { to: '/student/dashboard', label: 'Student Dashboard' },
       { to: '/about', label: 'About NexoraMind' },
