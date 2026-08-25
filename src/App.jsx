@@ -26,6 +26,7 @@ import NotFoundPage from './pages/public/NotFoundPage';
 import OfferLettersPage from './pages/public/OfferLettersPage';
 import PublicCertificatesPage from './pages/public/PublicCertificatesPage';
 import DashboardPage from './pages/public/DashboardPage';
+import AccountSettingsPage from './pages/public/AccountSettingsPage';
 
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
@@ -62,6 +63,7 @@ export default function App() {
               <Route path="/internships/:roleId/:duration" element={<InternshipDetailPage />} />
               <Route path="/offer-letters" element={<OfferLettersPage />} />
               <Route path="/certificates-list" element={<PublicCertificatesPage />} />
+              <Route path="/account/settings" element={<AccountSettingsPage />} />
             </Route>
           </Route>
 
