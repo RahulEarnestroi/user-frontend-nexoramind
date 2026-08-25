@@ -57,9 +57,7 @@ export default function Sidebar({ open, onClose }) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25">
-          Menu
-        </p>
+       
         {navItems.map((item) => {
           const active = isActive(item.to);
           return (
