@@ -11,6 +11,13 @@ function deriveMeStatus(userData) {
   return s === 'ACTIVE';
 }
 
+function handleSessionExpired() {
+  localStorage.removeItem('nexoramind_token');
+  localStorage.removeItem('nexoramind_user');
+  toast.error('Session expired. Please log in again.');
+  setTimeout(() => { window.location.href = '/'; }, 200);
+}
+
 export function ProfileProvider({ children }) {
   const [profileData, setProfileData] = useState(null);
   const [meStatus, setMeStatus] = useState(null);
@@ -26,10 +33,21 @@ export function ProfileProvider({ children }) {
     }
     try {
       const meData = await api.me();
+      if (meData && meData.Error === 'Session Expired') {
+        setProfileData(null);
+        setMeStatus(null);
+        setProfileLoading(false);
+        handleSessionExpired();
+        return;
+      }
       setProfileData(meData);
       setMeStatus(deriveMeStatus(meData));
       localStorage.setItem('nexoramind_user', JSON.stringify(meData));
-    } catch {
+    } catch (err) {
+      const msg = (err?.message || '').toLowerCase();
+      if (msg.includes('session expired')) {
+        handleSessionExpired();
+      }
       setProfileData(null);
       setMeStatus(null);
     } finally {
@@ -37,7 +55,6 @@ export function ProfileProvider({ children }) {
     }
   }, []);
 
-  // On mount, fetch profile if token exists
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);

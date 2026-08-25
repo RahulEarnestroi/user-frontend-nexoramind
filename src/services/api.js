@@ -1,5 +1,18 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+let isSessionExpiredFired = false;
+
+function handleSessionExpired() {
+  if (isSessionExpiredFired) return;
+  isSessionExpiredFired = true;
+  localStorage.removeItem('nexoramind_token');
+  localStorage.removeItem('nexoramind_user');
+  setTimeout(() => {
+    isSessionExpiredFired = false;
+    window.location.href = '/';
+  }, 200);
+}
+
 function getToken() {
   return localStorage.getItem('nexoramind_token');
 }
@@ -16,7 +29,16 @@ async function request(path, options = {}) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.message || data.detail || data.error || 'Request failed');
+    const errMsg = data.message || data.detail || data.error || data.Error || 'Request failed';
+    if (String(errMsg).toLowerCase().includes('session expired') || String(data.Error || '').includes('Session Expired')) {
+      handleSessionExpired();
+    }
+    throw new Error(errMsg);
+  }
+
+  if (data && data.Error === 'Session Expired') {
+    handleSessionExpired();
+    throw new Error('Session Expired');
   }
 
   return data;
@@ -54,6 +76,24 @@ export const api = {
     }),
 
   me: () => request('/nm/account/me'),
+
+  sendOtp: (type, email) =>
+    request('/nm/account/send-otp', {
+      method: 'POST',
+      body: JSON.stringify({ type, email }),
+    }),
+
+  forgotPassword: (email, otp, new_password) =>
+    request('/nm/account/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp, new_password }),
+    }),
+
+  changePassword: (old_password, new_password) =>
+    request('/nm/account/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ old_password, new_password }),
+    }),
 
   // ─── Internship ───────────────────────────────────
   getRoles: () => request('/nm/internship/roles'),
