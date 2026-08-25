@@ -78,7 +78,7 @@ export default function RegisterPage() {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Enter Full Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
@@ -93,7 +93,7 @@ export default function RegisterPage() {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="Enter your Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
