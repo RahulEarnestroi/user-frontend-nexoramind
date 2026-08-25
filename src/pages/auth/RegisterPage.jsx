@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    let type = "SHEET"
     e.preventDefault();
     setError('');
     if (password.length < 6) {
@@ -28,9 +29,9 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      await register(email, fullName, password);
+      await register(email, fullName, password, type);
       await refreshProfile();
-      navigate('/internships');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
       toast.error(err.message);

@@ -140,9 +140,7 @@ export default function PublicCertificatesPage() {
   return (
     <div className="py-20 bg-white dark:bg-black min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/internships" className="inline-flex items-center gap-1 text-sm text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to internships
-        </Link>
+       
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">

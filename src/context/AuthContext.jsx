@@ -40,8 +40,8 @@ export function AuthProvider({ children }) {
     return userData;
   }, []);
 
-  const register = useCallback(async (email, fullName, password) => {
-    const res = await api.register(email, fullName, password);
+  const register = useCallback(async (email, fullName, password,type) => {
+    const res = await api.register(email, fullName, password,type);
     const token = res.token || res.access_token || res.jwt;
     const userData = res.user || res.data || res;
 

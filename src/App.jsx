@@ -7,7 +7,7 @@ import { ThemeProvider } from './context/ThemeContext';
 
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
-import AdminLayout from './layouts/AdminLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 import StudentLayout from './layouts/StudentLayout';
 
 // Public Pages
@@ -25,21 +25,11 @@ import PrivacyPolicy from './pages/public/PrivacyPolicy';
 import NotFoundPage from './pages/public/NotFoundPage';
 import OfferLettersPage from './pages/public/OfferLettersPage';
 import PublicCertificatesPage from './pages/public/PublicCertificatesPage';
+import DashboardPage from './pages/public/DashboardPage';
 
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-
-// Admin Pages
-import AdminDashboard from './pages/admin/DashboardPage';
-import AdminCertificates from './pages/admin/CertificatesPage';
-import IssueCertificate from './pages/admin/IssueCertificatePage';
-import AdminStudents from './pages/admin/StudentsPage';
-import AdminCertifications from './pages/admin/CertificationsPage';
-import AdminTemplates from './pages/admin/TemplatesPage';
-import AdminVerification from './pages/admin/VerificationPage';
-import AdminAnalytics from './pages/admin/AnalyticsPage';
-import AdminSettings from './pages/admin/SettingsPage';
 
 // Student Pages
 import StudentDashboard from './pages/student/DashboardPage';
@@ -54,18 +44,25 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route element={<PublicLayout />}>
-       
-            <Route path="/certifications" element={<CertificationsPage />} />
-            <Route path="/certifications/:slug" element={<CertificationDetailPage />} />
-            <Route path="/internships" element={<InternshipsPage />} />
-            <Route path="/internships/:roleId/:duration" element={<InternshipDetailPage />} />
-            <Route path="/verify" element={<VerifyPage />} />
-            <Route path="/verify/:certificateId" element={<CertificateVerifyPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/offer-letters" element={<OfferLettersPage />} />
-            <Route path="/certificates-list" element={<PublicCertificatesPage />} />
+          {/* <Route path="/" element={<LandingPage />} /> */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          {/* <Route path="/verify" element={<VerifyPage />} /> */}
+          {/* <Route path="/verify/:certificateId" element={<CertificateVerifyPage />} /> */}
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<PublicLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/certifications" element={<CertificationsPage />} />
+              <Route path="/certifications/:slug" element={<CertificationDetailPage />} />
+              <Route path="/internships" element={<InternshipsPage />} />
+              <Route path="/internships/:roleId/:duration" element={<InternshipDetailPage />} />
+              <Route path="/offer-letters" element={<OfferLettersPage />} />
+              <Route path="/certificates-list" element={<PublicCertificatesPage />} />
+            </Route>
           </Route>
 
           {/* Auth Routes */}
@@ -91,10 +88,6 @@ export default function App() {
             <Route path="/student/certificates" element={<StudentCertificates />} />
             <Route path="/student/certificates/:id" element={<StudentCertificateDetail />} />
           </Route>
-
-          {/* Legal Pages */}
-          <Route path="/terms" element={<TermsAndConditions />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
 
           {/* Catch All */}
           <Route path="*" element={<NotFoundPage />} />

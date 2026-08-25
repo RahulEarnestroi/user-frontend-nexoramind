@@ -24,7 +24,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       await refreshProfile();
-      navigate('/internships');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
       toast.error(err.message);

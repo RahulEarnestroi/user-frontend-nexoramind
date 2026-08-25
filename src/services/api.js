@@ -47,10 +47,10 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
-  register: (email, fullName, password) =>
+  register: (email, fullName, password,type) =>
     request('/nm/account/register', {
       method: 'POST',
-      body: JSON.stringify({ email, full_name: fullName, password }),
+      body: JSON.stringify({ email, full_name: fullName, password,type }),
     }),
 
   me: () => request('/nm/account/me'),

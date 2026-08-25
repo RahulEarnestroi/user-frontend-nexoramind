@@ -337,9 +337,7 @@ export default function InternshipDetailPage() {
   return (
     <div className="py-16 bg-white dark:bg-black min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/internships" className="inline-flex items-center mt-10 gap-1 text-sm text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to internships
-        </Link>
+       
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
