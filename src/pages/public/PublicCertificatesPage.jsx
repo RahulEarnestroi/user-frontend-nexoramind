@@ -124,7 +124,7 @@ export default function PublicCertificatesPage() {
         return;
       }
 
-      toast.success('Opening print dialog — select "Save as PDF" to download.');
+      // toast.success('Opening print dialog — select "Save as PDF" to download.');
     } catch (err) {
       toast.error(err.message || 'Failed to prepare certificate');
       console.error('Certificate PDF error:', err);
