@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Download, Calendar, Search, Briefcase, CheckCircle2, Loader2, AlertCircle, X, ExternalLink, ArrowLeft } from 'lucide-react';
+import { FileText, Download, Calendar, Search, Briefcase, CheckCircle2, Loader2, AlertCircle, X, ExternalLink, Image, FileDown } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { api, extractList } from '../../services/api';
@@ -10,10 +10,7 @@ function formatDuration(raw) {
   if (!raw) return '';
   if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
   const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
-  if (m) {
-    const n = parseInt(m[1], 10);
-    return `${n} ${n === 1 ? 'Month' : 'Months'}`;
-  }
+  if (m) { const n = parseInt(m[1], 10); return `${n} ${n === 1 ? 'Month' : 'Months'}`; }
   return raw;
 }
 
@@ -35,6 +32,88 @@ function normalizeOL(o) {
   };
 }
 
+/* ── Helper: prepare HTML with base64 logo and embedded fonts ── */
+async function prepareHtml(rawHtml) {
+  if (!rawHtml) return '';
+  // Convert Logo.png to base64
+  let logoBase64 = '';
+  try {
+    const logoRes = await fetch('/Logo.png');
+    const logoBlob = await logoRes.blob();
+    logoBase64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(logoBlob);
+    });
+  } catch { /* skip */ }
+
+  let html = rawHtml
+    .replace(/src="Logo\.png"/g, `src="${logoBase64}"`)
+    .replace(/src='Logo\.png'/g, `src='${logoBase64}'`)
+    .replace(/url\(Logo\.png\)/g, `url(${logoBase64})`);
+
+  // Inject Google Fonts if not already present
+  if (!html.includes('fonts.googleapis.com')) {
+    const fontLink = `<link rel="preconnect" href="https://fonts.googleapis.com" />\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet" />`;
+    html = html.replace('</head>', `${fontLink}\n</head>`);
+  }
+  return html;
+}
+
+/* ── Helper: render HTML in a hidden container and wait for fonts ── */
+function renderInContainer(html) {
+  return new Promise((resolve) => {
+    const existing = document.getElementById('offer-letter-renderer');
+    if (existing) existing.remove();
+
+    const container = document.createElement('div');
+    container.id = 'offer-letter-renderer';
+    container.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:820px;z-index:-1;background:#fff;';
+    document.body.appendChild(container);
+
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'width:820px;border:0;overflow:hidden;';
+    iframe.setAttribute('scrolling', 'no');
+    container.appendChild(iframe);
+
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
+
+    // Wait for fonts to load then resolve
+    const checkReady = () => {
+      try {
+        if (iframe.contentDocument && iframe.contentDocument.fonts) {
+          iframe.contentDocument.fonts.ready.then(() => {
+            setTimeout(() => resolve({ container, iframe }), 600);
+          });
+        } else {
+          setTimeout(() => resolve({ container, iframe }), 1000);
+        }
+      } catch {
+        setTimeout(() => resolve({ container, iframe }), 1000);
+      }
+    };
+    iframe.onload = checkReady;
+    setTimeout(checkReady, 2000); // fallback
+  });
+}
+
+/* ── Helper: capture PNG from iframe ── */
+async function capturePng(iframe) {
+  const html2canvas = (await import('html2canvas')).default;
+  const canvas = await html2canvas(iframe.contentDocument.body, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff',
+    width: 820,
+    windowWidth: 820,
+  });
+  return canvas.toDataURL('image/png');
+}
+
 export default function OfferLettersPage() {
   const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState('');
@@ -45,6 +124,9 @@ export default function OfferLettersPage() {
   const [viewing, setViewing] = useState(null);
   const [renderedHtml, setRenderedHtml] = useState('');
   const [loadingHtml, setLoadingHtml] = useState(false);
+
+  const [downloading, setDownloading] = useState(null);
+  const [downloadModal, setDownloadModal] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated) { setLoading(false); return; }
@@ -73,61 +155,93 @@ export default function OfferLettersPage() {
     }
   }, []);
 
-  const handleDownload = useCallback(async (ol) => {
+  /* ── Download as PNG ── */
+  const handleDownloadPNG = useCallback(async (ol) => {
+    setDownloading(ol.offerLetterId + '_png');
     try {
       const data = await api.getOfferLetter(ol.roleId, ol.duration);
       const html = data.RenderedHTML ?? data.renderedHTML ?? data.rendered_html ?? data.html ?? '';
       if (!html) { toast.error('No offer letter content available'); return; }
 
-      // 1. Convert Logo.png to base64 so relative paths resolve
-      const logoRes = await fetch('/Logo.png');
-      const logoBlob = await logoRes.blob();
-      const logoBase64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(logoBlob);
-      });
+      const prepared = await prepareHtml(html);
+      const { container, iframe } = await renderInContainer(prepared);
+      const pngDataUrl = await capturePng(iframe);
 
-      const fixedHtml = html
-        .replace(/src="Logo\.png"/g, `src="${logoBase64}"`)
-        .replace(/src='Logo\.png'/g, `src='${logoBase64}'`)
-        .replace(/url\(Logo\.png\)/g, `url(${logoBase64})`);
+      // Cleanup
+      container.remove();
 
-      // 2. Add print-friendly CSS and auto-print script
-      const printReadyHtml = fixedHtml.replace(
+      // Download
+      const link = document.createElement('a');
+      link.download = `OfferLetter_${ol.roleName}_${ol.duration}.png`;
+      link.href = pngDataUrl;
+      link.click();
+
+      toast.success('Offer letter downloaded as PNG!');
+    } catch (err) {
+      toast.error(err.message || 'Failed to download PNG');
+      console.error('PNG download error:', err);
+    } finally {
+      setDownloading(null);
+      const el = document.getElementById('offer-letter-renderer');
+      if (el) el.remove();
+    }
+  }, []);
+
+  /* ── Download as PDF ── */
+  const handleDownloadPDF = useCallback(async (ol) => {
+    setDownloading(ol.offerLetterId + '_pdf');
+    try {
+      const data = await api.getOfferLetter(ol.roleId, ol.duration);
+      const html = data.RenderedHTML ?? data.renderedHTML ?? data.rendered_html ?? data.html ?? '';
+      if (!html) { toast.error('No offer letter content available'); return; }
+
+      const prepared = await prepareHtml(html);
+      const { container, iframe } = await renderInContainer(prepared);
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      const opt = {
+        margin: 0,
+        filename: `OfferLetter_${ol.roleName}_${ol.duration}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', width: 820, windowWidth: 820 },
+        jsPDF: { unit: 'px', format: [820, 1200], orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      };
+
+      await html2pdf().set(opt).from(iframe.contentDocument.body).save();
+      container.remove();
+      toast.success('Offer letter downloaded as PDF!');
+    } catch (err) {
+      toast.error(err.message || 'Failed to download PDF');
+      console.error('PDF download error:', err);
+    } finally {
+      setDownloading(null);
+      const el = document.getElementById('offer-letter-renderer');
+      if (el) el.remove();
+    }
+  }, []);
+
+  /* ── Download via print (fallback) ── */
+  const handleDownloadPrint = useCallback(async (ol) => {
+    try {
+      const data = await api.getOfferLetter(ol.roleId, ol.duration);
+      const html = data.RenderedHTML ?? data.renderedHTML ?? data.rendered_html ?? data.html ?? '';
+      if (!html) { toast.error('No offer letter content available'); return; }
+
+      const prepared = await prepareHtml(html);
+      const printHtml = prepared.replace(
         '</head>',
-        `<style>
-          @media print {
-            body { background: #fff !important; padding: 0 !important; margin: 0 !important; min-height: auto !important; display: block !important; justify-content: unset !important; align-items: unset !important; }
-            .document { box-shadow: none !important; border-radius: 0 !important; margin: 0 auto !important; page-break-inside: avoid; }
-          }
-        </style>
-        <script>
-          window.onload = function() {
-            document.fonts.ready.then(function() {
-              setTimeout(function() { window.print(); }, 300);
-            });
-          };
-        </script>
-        </head>`
+        `<style>@media print{body{background:#fff!important;padding:0!important;margin:0!important;min-height:auto!important;display:block!important;justify-content:unset!important;align-items:unset!important;}.document{box-shadow:none!important;border-radius:0!important;margin:0 auto!important;}}</style>
+        <script>window.onload=function(){document.fonts.ready.then(function(){setTimeout(function(){window.print();},500);});};</script></head>`
       );
 
-      // 3. Create blob URL with proper origin for fonts
-      const blob = new Blob([printReadyHtml], { type: 'text/html;charset=utf-8' });
+      const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
       const blobUrl = URL.createObjectURL(blob);
-
-      // 4. Open in a new window — browser renders it perfectly
-      const printWindow = window.open(blobUrl, '_blank');
-      if (!printWindow) {
-        toast.warning('Popup blocked. Please allow popups for this site and try again.');
-        URL.revokeObjectURL(blobUrl);
-        return;
-      }
-
-      toast.success('Opening print dialog — select "Save as PDF" to download.');
+      const win = window.open(blobUrl, '_blank');
+      if (!win) { toast.warning('Popup blocked. Allow popups for this site.'); URL.revokeObjectURL(blobUrl); return; }
+      // toast.success('Opening print dialog — select "Save as PDF" to download.');
     } catch (err) {
       toast.error(err.message || 'Failed to prepare offer letter');
-      console.error('Offer letter PDF error:', err);
     }
   }, []);
 
@@ -139,26 +253,21 @@ export default function OfferLettersPage() {
 
   return (
     <div className="py-5 bg-white dark:bg-black min-h-screen">
-      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-       
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-5">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
             <FileText className="w-3 h-3" /> Offer Letters
           </span>
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Internship Offer Letters</h1>
-          <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">
-            View and download your official internship offer letters from NexoraMind Tech.
-          </p>
+          <p className="mt-4 text-slate-500 dark:text-white/40 max-w-2xl mx-auto text-lg font-normal">View and download your official internship offer letters from NexoraMind Tech.</p>
         </motion.div>
 
         {!isAuthenticated && !loading && (
           <div className="text-center py-16">
             <FileText className="w-12 h-12 text-slate-200 dark:text-white/10 mx-auto mb-4" />
             <p className="text-slate-500 dark:text-white/40 text-sm mb-4">Please log in to view your offer letters.</p>
-            <Link to="/login" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">
-              Log In
-            </Link>
+            <Link to="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-semibold hover:opacity-90 transition-all">Log In</Link>
           </div>
         )}
 
@@ -191,7 +300,7 @@ export default function OfferLettersPage() {
               </div>
             </motion.div>
 
-            <div className="grid md:grid-cols-4 gap-6  mx-auto">
+            <div className="grid md:grid-cols-4 gap-6 mx-auto">
               {filtered.map((ol, i) => (
                 <motion.div
                   key={ol.offerLetterId || i}
@@ -239,10 +348,15 @@ export default function OfferLettersPage() {
                       <ExternalLink className="w-3.5 h-3.5" /> View
                     </button>
                     <button
-                      onClick={() => handleDownload(ol)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-white/50 text-xs font-medium hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:border-primary-200 dark:hover:border-primary-500/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all"
+                      onClick={() => setDownloadModal(ol)}
+                      disabled={downloading === ol.offerLetterId + '_png' || downloading === ol.offerLetterId + '_pdf'}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-white/50 text-xs font-medium hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:border-primary-200 dark:hover:border-primary-500/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Download className="w-3.5 h-3.5" /> Download
+                      {downloading === ol.offerLetterId + '_png' || downloading === ol.offerLetterId + '_pdf' ? (
+                        <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving...</>
+                      ) : (
+                        <><Download className="w-3.5 h-3.5" /> Download</>
+                      )}
                     </button>
                   </div>
                 </motion.div>
@@ -259,7 +373,7 @@ export default function OfferLettersPage() {
         )}
       </div>
 
-      {/* View Modal */}
+      {/* ── View Modal ── */}
       <AnimatePresence>
         {viewing && (
           <motion.div
@@ -274,15 +388,31 @@ export default function OfferLettersPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-4xl h-[85vh] bg-white dark:bg-primary-950 rounded-2xl border border-slate-200 dark:border-white/[0.1] shadow-2xl overflow-hidden flex flex-col"
+              className="w-full max-w-4xl h-[85vh] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/[0.1] shadow-2xl overflow-hidden flex flex-col"
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/[0.06]">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Offer Letter — {viewing.roleName}</h3>
-                <button onClick={() => setViewing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white/60 transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownloadPNG(viewing)}
+                    disabled={downloading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-xs font-medium text-slate-600 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all disabled:opacity-50"
+                  >
+                    <Image className="w-3.5 h-3.5" /> PNG
+                  </button>
+                  <button
+                    onClick={() => handleDownloadPDF(viewing)}
+                    disabled={downloading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-xs font-medium text-slate-600 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-all disabled:opacity-50"
+                  >
+                    <FileDown className="w-3.5 h-3.5" /> PDF
+                  </button>
+                  <button onClick={() => setViewing(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white/60 transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-              <div className="flex-1 overflow-auto">
+              <div className="flex-1 overflow-auto bg-slate-100 dark:bg-slate-800">
                 {loadingHtml ? (
                   <div className="flex items-center justify-center py-20">
                     <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
@@ -295,6 +425,83 @@ export default function OfferLettersPage() {
                     <p className="text-slate-500 dark:text-white/40 text-sm">No content available</p>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Download Format Modal ── */}
+      <AnimatePresence>
+        {downloadModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setDownloadModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-2xl overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Download Offer Letter</h3>
+                    <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">{downloadModal.roleName}</p>
+                  </div>
+                  <button onClick={() => setDownloadModal(null)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors">
+                    <X className="w-4 h-4 text-slate-400 dark:text-white/40" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={() => { handleDownloadPNG(downloadModal); setDownloadModal(null); }}
+                    disabled={!!downloading}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-primary-300 dark:hover:border-primary-500/20 hover:bg-primary-50/50 dark:hover:bg-primary-500/[0.04] transition-all group disabled:opacity-50"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-sm shadow-emerald-500/20 shrink-0">
+                      <Image className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Download as PNG</p>
+                      <p className="text-xs text-slate-400 dark:text-white/30">High quality image file</p>
+                    </div>
+                  </button>
+
+                  {/* <button
+                    onClick={() => { handleDownloadPDF(downloadModal); setDownloadModal(null); }}
+                    disabled={!!downloading}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-primary-300 dark:hover:border-primary-500/20 hover:bg-primary-50/50 dark:hover:bg-primary-500/[0.04] transition-all group disabled:opacity-50"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center shadow-sm shadow-red-500/20 shrink-0">
+                      <FileDown className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Download as PDF</p>
+                      <p className="text-xs text-slate-400 dark:text-white/30">Print-ready document</p>
+                    </div>
+                  </button> */}
+
+                  <button
+                    onClick={() => { handleDownloadPrint(downloadModal); setDownloadModal(null); }}
+                    disabled={!!downloading}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-primary-300 dark:hover:border-primary-500/20 hover:bg-primary-50/50 dark:hover:bg-primary-500/[0.04] transition-all group disabled:opacity-50"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-sm shadow-primary-500/20 shrink-0">
+                      <Download className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">Print / Save as PDF</p>
+                      <p className="text-xs text-slate-400 dark:text-white/30">Open print dialog for custom options</p>
+                    </div>
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
