@@ -3,14 +3,29 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext(undefined);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    const root = document.documentElement;
+    let resolved = 'light';
+
+    try {
       const stored = localStorage.getItem('nexora-theme');
-      if (stored) return stored;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (stored === 'dark' || stored === 'light') {
+        resolved = stored;
+      }
+    } catch (_) {
+      resolved = 'light';
     }
-    return 'dark';
-  });
+
+    if (resolved === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+
+    setTheme(resolved);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -19,7 +34,11 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('nexora-theme', theme);
+    try {
+      localStorage.setItem('nexora-theme', theme);
+    } catch (_) {
+      // ignore write errors
+    }
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
