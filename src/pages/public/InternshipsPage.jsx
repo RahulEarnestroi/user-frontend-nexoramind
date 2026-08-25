@@ -6,7 +6,7 @@ import {
   Loader2, AlertCircle, CheckCircle2, Clock,
   Eye, Award, FileText, ArrowRight, X,
   Sparkles, Zap, Users, Trophy, SlidersHorizontal, Search,
-  CalendarDays, Star, Filter, RefreshCw
+  CalendarDays, Star, Filter, RefreshCw,Rocket
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
@@ -512,6 +512,36 @@ export default function InternshipsPage() {
                                 transition={{ duration: 0.8, ease: 'easeOut' }}
                                 className={`h-full rounded-full ${isCompleted ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 'bg-gradient-to-r from-primary-500 to-secondary-500'}`}
                               />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Path to Certificate (unenrolled only) */}
+                        {!isEnrolled && (
+                          <div className={`mb-4 rounded-xl ${tier.bg} ${tier.border} border p-3.5`}>
+                            <p className={`text-[10px] font-extrabold ${tier.text} uppercase tracking-wider mb-3 flex items-center gap-1.5`}>
+                              <Rocket className="w-3 h-3" /> Your Journey
+                            </p>
+                            <div className="space-y-2.5">
+                              {[
+                                { num: '1', label: `Complete ${card.taskCount} Tasks`, icon: CheckCircle2 },
+                                { num: '2', label: 'Automated Task Review', icon: Sparkles },
+                                { num: '3', label: `${tier.desc}`, icon: Award },
+                                { num: '4', label: 'Receive Offer Letter', icon: FileText },
+                              ].map((step) => {
+                                const StepIcon = step.icon;
+                                return (
+                                  <div key={step.num} className="flex items-center gap-2.5">
+                                    <div className={`w-5 h-5 rounded-full ${tier.bg} ${tier.text} border ${tier.border} flex items-center justify-center shrink-0`}>
+                                      <span className="text-[9px] font-extrabold">{step.num}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                      <StepIcon className={`w-3 h-3 shrink-0 ${tier.text} opacity-70`} />
+                                      <span className="text-[11px] font-semibold text-slate-700 dark:text-white/55 truncate">{step.label}</span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         )}

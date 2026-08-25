@@ -556,6 +556,7 @@ export default function InternshipDetailPage() {
       setSubmitting(false);
     }
   };
+  const paginatedTasks = tasks.slice((currentPage - 1) * TASKS_PER_PAGE, currentPage * TASKS_PER_PAGE);
 
   /* ── Determine if a task is locked ── */
   const isTaskLocked = (task) => {
@@ -568,9 +569,19 @@ export default function InternshipDetailPage() {
   /* ── Find first unlocked + not submitted task ── */
   const activeTask = tasks.find(t => t.reviewStatus === 'NOT_SUBMITTED' && !isTaskLocked(t));
 
+  /* ── Auto-expand first task when they load (active task, else first on page) ── */
+  useEffect(() => {
+    if (tasks.length === 0 || loading) return;
+    const firstOnPage = paginatedTasks[0];
+    const candidate = activeTask ?? firstOnPage;
+    if (candidate && expandedTask === null && !isTaskLocked(candidate)) {
+      setExpandedTask(candidate.taskNumber);
+      fetchTaskDetail(candidate.taskNumber);
+    }
+  }, [tasks, loading, activeTask, paginatedTasks, expandedTask, fetchTaskDetail]);
+
   /* ── Pagination ── */
   const totalPages = Math.ceil(tasks.length / TASKS_PER_PAGE);
-  const paginatedTasks = tasks.slice((currentPage - 1) * TASKS_PER_PAGE, currentPage * TASKS_PER_PAGE);
 
   const percent = summary?.percent_approved ?? (tasks.length > 0 ? Math.round((tasks.filter(t => t.reviewStatus === 'APPROVED').length / tasks.length) * 100) : 0);
   const allApproved = summary?.all_approved ?? (tasks.length > 0 && tasks.every(t => t.reviewStatus === 'APPROVED'));
