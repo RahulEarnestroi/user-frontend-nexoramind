@@ -138,11 +138,11 @@ export default function OfferLettersPage() {
   );
 
   return (
-    <div className="py-20 bg-white dark:bg-black min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-5 bg-white dark:bg-black min-h-screen">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
        
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-5">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-xs font-semibold mb-4 border border-primary-100 dark:border-primary-500/15 tracking-wide uppercase">
             <FileText className="w-3 h-3" /> Offer Letters
           </span>
@@ -191,7 +191,7 @@ export default function OfferLettersPage() {
               </div>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-4 gap-6  mx-auto">
               {filtered.map((ol, i) => (
                 <motion.div
                   key={ol.offerLetterId || i}

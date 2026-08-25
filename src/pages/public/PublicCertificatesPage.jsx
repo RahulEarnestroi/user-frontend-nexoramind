@@ -138,8 +138,8 @@ export default function PublicCertificatesPage() {
   );
 
   return (
-    <div className="py-20 bg-white dark:bg-black min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-5 bg-white dark:bg-black min-h-screen">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
        
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
@@ -191,7 +191,7 @@ export default function PublicCertificatesPage() {
               </div>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6  mx-auto">
               {filtered.map((cert, i) => (
                 <motion.div
                   key={cert.certificateId || i}
