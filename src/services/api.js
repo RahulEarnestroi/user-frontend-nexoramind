@@ -73,6 +73,13 @@ export const api = {
       body: JSON.stringify({ GitHubLink: githubLink, RoleID: roleId, Duration: duration, TaskNumber: taskNumber }),
     }),
 
+  // ─── Tasks Status ─────────────────────────────────
+  getTasksStatus: (roleId, duration) =>
+    request(`/nm/internship/tasks-status?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
+
+  // ─── Enrollments ──────────────────────────────────
+  listInternships: () => request('/nm/internship/internships'),
+
   // ─── Certificates ─────────────────────────────────
   getCertificate: (roleId, duration) =>
     request(`/nm/internship/certificate?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
