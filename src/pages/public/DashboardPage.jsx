@@ -60,7 +60,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f5f7] dark:bg-[#09090b]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* ═══ Welcome ═══ */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="mb-8">
