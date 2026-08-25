@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Briefcase, Award, FileText,
-  LogOut, ChevronRight, X
+  LogOut, ChevronRight, X, Settings
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
@@ -16,6 +16,7 @@ const navItems = [
 ];
 
 const bottomItems = [
+  { to: '/account/settings', icon: Settings, label: 'Account Settings' },
   { to: '/about', icon: ChevronRight, label: 'About' },
 ];
 
