@@ -169,7 +169,7 @@ export default function InternshipsPage() {
   };
 
   return (
-    <div className="py-20 bg-white dark:bg-black min-h-screen">
+    <div className="py-5 bg-white dark:bg-black min-h-screen">
       <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
@@ -201,7 +201,7 @@ export default function InternshipsPage() {
 
         {/* Cards Grid */}
         {!loading && !error && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mx-auto">
             {cards.map((card, i) => {
               const IconComp = iconMap[card.icon] || Briefcase;
               const isThisEnrolling = enrollingId === card.key;

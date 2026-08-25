@@ -577,7 +577,7 @@ export default function InternshipDetailPage() {
 
   return (
     <div className="py-10 bg-white dark:bg-black min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Back Link ── */}
         <Link to="/internships" className="inline-flex items-center gap-2 text-sm text-slate-400 dark:text-white/30 hover:text-slate-700 dark:hover:text-white/60 mb-8 transition-colors">
