@@ -45,7 +45,7 @@ export default function Sidebar({ open, onClose }) {
       {/* Logo */}
       <div className="px-5 h-[72px] flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06]">
         <Link to="/dashboard" className="flex items-center gap-2" onClick={onClose}>
-          <img src={Logo} alt="NexoraMind" className="h-7 w-auto" />
+          <img src={Logo} alt="NexoraMind" className=" w-auto" />
         </Link>
         <button
           onClick={onClose}
