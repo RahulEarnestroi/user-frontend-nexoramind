@@ -126,6 +126,12 @@ export const api = {
 
   listCertificates: () => request('/nm/internship/certificates'),
 
+  submitCertificatePayment: (certificateId, transactionId) =>
+    request('/nm/internship/add-transaction-id', {
+      method: 'POST',
+      body: JSON.stringify({ CertificateID: certificateId, TransactionID: transactionId }),
+    }),
+
   // ─── Offer Letters ────────────────────────────────
   getOfferLetter: (roleId, duration) =>
     request(`/nm/internship/offer-letter?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
