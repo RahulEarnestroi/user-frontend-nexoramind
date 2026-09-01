@@ -699,7 +699,7 @@ export default function PublicCertificatesPage() {
                     </div>
                   </div>
 
-                  <div className="px-7 pb-7 ">
+                  <div className="px-7 pb-7 -mt-10">
                     {/* QR card */}
                     <motion.div
                       initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1, type: 'spring' }}
