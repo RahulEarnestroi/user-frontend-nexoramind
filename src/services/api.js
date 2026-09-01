@@ -72,7 +72,7 @@ export const api = {
   register: (email, fullName, password,type) =>
     request('/nm/account/register', {
       method: 'POST',
-      body: JSON.stringify({ email, full_name: fullName, password,type }),
+      body: JSON.stringify({ email, full_name: fullName, password,account_type:"PLATFORM" }),
     }),
 
   me: () => request('/nm/account/me'),
