@@ -41,7 +41,7 @@ function normalizeCert(c) {
 }
 
 const UPI_ID = 'rahulgond8652738005@okhdfcbank';
-const UPI_PAYEE = 'NexoraMind';
+const UPI_PAYEE = 'Rahul Gond';
 const DEFAULT_PRICE = 199;
 
 function formatPrice(n) {
@@ -54,9 +54,9 @@ function upiDeepLink(amount) {
   return `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_PAYEE)}&am=${a.toFixed(2)}&cu=INR&tn=Certificate%20Delivery%20Fee`;
 }
 
-const STATIC_QR_SRC = `https://api.qrserver.com/v1/create-qr-code/?size=520x520&margin=28&ecc=M&data=${encodeURIComponent(
-  upiDeepLink(0).replace(/&am=0\.00/, '')
-)}`;
+function qrSrcForAmount(amount) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=520x520&margin=28&ecc=M&data=${encodeURIComponent(upiDeepLink(amount))}`;
+}
 
 async function prepareHtml(rawHtml) {
   if (!rawHtml) return '';
@@ -699,26 +699,26 @@ export default function PublicCertificatesPage() {
                     </div>
                   </div>
 
-                  <div className="px-7 pb-7 -mt-10">
+                  <div className="px-7 pb-7 ">
                     {/* QR card */}
                     <motion.div
                       initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1, type: 'spring' }}
                       className="bg-white dark:bg-white/[0.04] rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-xl shadow-primary-500/10 p-6"
                     >
                       {/* Payee header (matches screenshot) */}
-                      <div className="flex items-center justify-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-white/[0.05]">
-                        {/* <div className="w-11 h-11 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 dark:from-white dark:to-slate-100 flex items-center justify-center shadow-md ring-2 ring-slate-200 dark:ring-white/10 shrink-0">
+                      {/* <div className="flex items-center justify-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-white/[0.05]">
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 dark:from-white dark:to-slate-100 flex items-center justify-center shadow-md ring-2 ring-slate-200 dark:ring-white/10 shrink-0">
                           <span className="text-[11px] font-black text-white dark:text-slate-900 leading-none">RG27</span>
-                        </div> */}
-                        {/* <span className="text-[22px] font-bold tracking-tight text-slate-800 dark:text-white leading-none">{UPI_PAYEE}</span> */}
-                      </div>
+                        </div>
+                        <span className="text-[22px] font-bold tracking-tight text-slate-800 dark:text-white leading-none">{UPI_PAYEE}</span>
+                      </div> */}
 
                       {/* QR frame */}
                       <div className="relative">
                         <div className="w-full max-w-[280px] mx-auto rounded-3xl bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 border border-slate-200 dark:border-white/[0.06] p-4 shadow-inner">
                           <img
-                            src={STATIC_QR_SRC}
-                            alt={`Scan to pay ${UPI_PAYEE} via UPI`}
+                            src={qrSrcForAmount(unlockModal.cert.price || DEFAULT_PRICE)}
+                            alt={`Scan to pay ${UPI_PAYEE} ${formatPrice(unlockModal.cert.price || DEFAULT_PRICE)} via UPI`}
                             className="w-full aspect-square object-contain rounded-2xl bg-white"
                             onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }}
                           />
