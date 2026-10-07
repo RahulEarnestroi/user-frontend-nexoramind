@@ -465,7 +465,7 @@ function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit, taskType 
 }
 
 /* ── Task Card (Stepper Style) ── */
-function TaskCard({ task, displayNumber, index, isLocked, isActive, isExpanded, onToggle, onSubmit, taskDetail, submitting, taskType = 'github' }) {
+function TaskCard({ task, displayNumber, index, isLocked, isActive, isExpanded, onToggle, onSubmit, taskDetail, submitting, taskType = 'github', isFinalTask = false }) {
   const st = statusConfig[task.reviewStatus] || statusConfig.NOT_SUBMITTED;
   const StatusIcon = st.icon;
   const shownNumber = displayNumber ?? task.taskNumber;
@@ -511,7 +511,7 @@ function TaskCard({ task, displayNumber, index, isLocked, isActive, isExpanded, 
             {task.title}
           </h4>
           <p className="text-[11px] text-slate-400 dark:text-white/30 mt-0.5">
-            {isLocked ? (task.taskNumber >= 100 ? 'Complete certificate payment to unlock' : 'Complete previous tasks first') : `Task ${shownNumber}`}
+            {isLocked ? (isFinalTask ? 'Complete certificate payment to unlock' : 'Complete previous tasks first') : `Task ${shownNumber}`}
           </p>
         </div>
 
@@ -591,6 +591,8 @@ export default function InternshipDetailPage() {
   const { isAuthenticated } = useAuth();
 
   const [tasks, setTasks] = useState([]);
+  console.log(tasks);
+  
   const [summary, setSummary] = useState(null);
   const [roleName, setRoleName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -632,8 +634,12 @@ export default function InternshipDetailPage() {
   }, [isAuthenticated, fetchTasks]);
 
   /* ── Readiness (LinkedIn) task helpers ── */
-  const isReadinessTaskNumber = (taskNumber) => taskNumber === 0 || taskNumber >= 100;
-  const getDisplayNumber = (taskNumber) => (taskNumber >= 100 ? tasks.length - 1 : taskNumber);
+  // The "final" readiness task is simply the LAST task (highest TaskNumber), not a >=100 sentinel
+  const lastTaskNumber = tasks.length > 0 ? Math.max(...tasks.map(t => t.taskNumber)) : null;
+  const isFinalReadinessTask = (taskNumber) => lastTaskNumber !== null && taskNumber === lastTaskNumber && taskNumber !== 0;
+  const isReadinessTaskNumber = (taskNumber) => taskNumber === 0 || isFinalReadinessTask(taskNumber);
+  // The final task shows its actual TaskNumber (no remapping)
+  const getDisplayNumber = (taskNumber) => taskNumber;
 
   /* ── Check certificate payment status (gates the final task) ── */
   useEffect(() => {
@@ -717,7 +723,7 @@ export default function InternshipDetailPage() {
       }
       setSubmitting(true);
       try {
-        await api.submitReadinessTask(link, roleId, duration, taskObj.taskNumber >= 100 ? 'final' : 'task0');
+        await api.submitReadinessTask(link, roleId, duration, isFinalReadinessTask(taskObj.taskNumber) ? 'final' : 'task0');
         toast.success('LinkedIn post submitted! It will be reviewed shortly.');
         setSubmitModal(null);
         setGithubLink('');
@@ -748,12 +754,12 @@ export default function InternshipDetailPage() {
   /* ── Determine if a task is locked ── */
   const isTaskLocked = (task) => {
     if (task.reviewStatus !== 'NOT_SUBMITTED') return false;
-    // Final readiness task: locked until certificate payment is done
-    if (task.taskNumber >= 100) return !paymentDone;
+    // Final readiness task (last task): locked until certificate payment is done
+    if (isFinalReadinessTask(task.taskNumber)) return !paymentDone;
     // Task 0 (optional LinkedIn readiness task): always open
     if (task.taskNumber === 0) return false;
     // Regular (non-post) tasks unlock sequentially; the first one is always open
-    const regularTasks = tasks.filter(t => t.taskNumber !== 0 && t.taskNumber < 100);
+    const regularTasks = tasks.filter(t => !isReadinessTaskNumber(t.taskNumber));
     const idx = regularTasks.findIndex(t => t.taskNumber === task.taskNumber);
     if (idx <= 0) return false;
     return regularTasks[idx - 1].reviewStatus === 'NOT_SUBMITTED';
@@ -944,6 +950,7 @@ export default function InternshipDetailPage() {
                 displayNumber={getDisplayNumber(task.taskNumber)}
                 index={i}
                 isLocked={isTaskLocked(task)}
+                isFinalTask={isFinalReadinessTask(task.taskNumber)}
                 isActive={activeTask?.taskNumber === task.taskNumber}
                 isExpanded={expandedTask === task.taskNumber}
                 onToggle={() => handleToggle(task.taskNumber)}
