@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, Rocket, GitPullRequest,
   Eye, Hourglass, CircleDot, Lock,
   Zap, Target, Layers, Code2, BookOpen,
-  Sparkles, Star, Trophy
+  Sparkles, Star, Trophy, Copy
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
@@ -17,6 +17,7 @@ import { api, extractList } from '../../services/api';
 /* ── Helpers ── */
 function formatDuration(raw) {
   if (!raw) return '';
+  if (typeof raw === 'string' && raw.trim().toLowerCase() === 'all') return 'All';
   if (/\s/.test(raw) && /[A-Z]/.test(raw)) return raw;
   const m = raw.match(/^(\d+)\s*(month|months|mo)$/i);
   if (m) { const n = parseInt(m[1], 10); return `${n} ${n === 1 ? 'Month' : 'Months'}`; }
@@ -50,9 +51,11 @@ function normalizeTask(t) {
     title: t.Title ?? t.title ?? t.TaskName ?? t.task_name ?? 'Untitled Task',
     reviewStatus,
     githubLink: t.GitHubLink ?? t.github_link ?? '',
+    linkedinPostURL: t.LinkedInPostURL ?? t.linkedin_post_url ?? '',
     submittedAt: t.SubmittedAt ?? t.submitted_at ?? null,
     reviewStatusChangedAt: t.ReviewStatusChangedAt ?? null,
     createdAt: t.CreatedAt ?? null,
+    raw: t,
   };
 }
 
@@ -70,6 +73,7 @@ function normalizeTaskDetail(t) {
     techStack: t.TechStack ?? t.tech_stack ?? [],
     submission: t.Submission ?? t.submission ?? [],
     evaluationCriteria: t.EvaluationCriteria ?? t.evaluation_criteria ?? [],
+    linkedinPostTemplate: t.LinkedInPostTemplate ?? t.linkedin_post_template ?? '',
     dataset: t.Dataset ?? t.dataset ?? null,
     status: t.Status ?? t.status ?? '',
     createdAt: t.CreatedAt ?? null,
@@ -91,9 +95,10 @@ function StepperConnector({ completed, active }) {
 }
 
 /* ── Stepper Step Circle ── */
-function StepCircle({ taskNumber, status, isLocked, isActive, onClick }) {
+function StepCircle({ taskNumber, displayNumber, status, isLocked, isActive, onClick }) {
   const st = statusConfig[status] || statusConfig.NOT_SUBMITTED;
   const StatusIcon = st.icon;
+  const shownNumber = displayNumber ?? taskNumber;
   return (
     <div className="flex flex-col items-center" style={{ width: 64 }}>
       <motion.button
@@ -120,7 +125,7 @@ function StepCircle({ taskNumber, status, isLocked, isActive, onClick }) {
         ) : status === 'PENDING' || status === 'REVIEWING' ? (
           <StatusIcon className="w-5 h-5 text-white" />
         ) : (
-          <span className="text-sm font-extrabold text-slate-700 dark:text-white/80">{taskNumber}</span>
+          <span className="text-sm font-extrabold text-slate-700 dark:text-white/80">{shownNumber}</span>
         )}
         {isActive && (
           <motion.div
@@ -135,7 +140,7 @@ function StepCircle({ taskNumber, status, isLocked, isActive, onClick }) {
         isActive ? 'text-primary-600 dark:text-primary-400' :
         status === 'APPROVED' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-white/40'
       }`}>
-        {isLocked ? 'Locked' : status === 'APPROVED' ? 'Done' : status === 'PENDING' ? 'Pending' : status === 'REVIEWING' ? 'Review' : `Task ${taskNumber}`}
+        {isLocked ? 'Locked' : status === 'APPROVED' ? 'Done' : status === 'PENDING' ? 'Pending' : status === 'REVIEWING' ? 'Review' : `Task ${shownNumber}`}
       </span>
     </div>
   );
@@ -185,7 +190,42 @@ function RequirementSection({ section }) {
 }
 
 /* ── Expanded Task Detail Panel ── */
-function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit }) {
+function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit, taskType = 'github' }) {
+  /* ── LinkedIn post composer (readiness tasks: Task 0 / final task) ── */
+  const [postText, setPostText] = useState('');
+  const [templateCopied, setTemplateCopied] = useState(false);
+
+  const filledTemplate = (detail?.linkedinPostTemplate || '')
+    .replaceAll('{RoleName}', detail?.roleName || '')
+    .replaceAll('{role_name}', detail?.roleName || '')
+    .replaceAll('{duration}', formatDuration(detail?.duration) || '')
+    .replaceAll('{Duration}', formatDuration(detail?.duration) || '');
+
+  useEffect(() => {
+    if (taskType === 'linkedin' && filledTemplate) setPostText(filledTemplate);
+  }, [filledTemplate, taskType]);
+
+  const copyToClipboard = async (text) => {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch { toast.error('Copy failed — please select and copy the text manually.'); return false; }
+  };
+
+  const handleCopyPost = async () => {
+    if (!postText.trim()) return;
+    if (await copyToClipboard(postText)) {
+      setTemplateCopied(true);
+      toast.success('Post copied! Paste it into your LinkedIn composer.');
+      setTimeout(() => setTemplateCopied(false), 2500);
+    }
+  };
+
+  const handleCopyAndOpenLinkedIn = async () => {
+    if (postText.trim() && await copyToClipboard(postText)) {
+      toast.success('Post copied! Paste it into the LinkedIn composer.');
+    }
+    window.open('https://www.linkedin.com/feed/', '_blank', 'noopener,noreferrer');
+  };
+
   if (!detail) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -298,15 +338,99 @@ function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit }) {
         </div>
       )}
 
-      {/* Submitted GitHub Link */}
-      {isSubmitted && detail.githubLink && (
+      {/* LinkedIn Post Composer (Task 0 / final readiness task) */}
+      {taskType === 'linkedin' && (
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-primary-50/60 to-secondary-50/60 dark:from-primary-500/[0.05] dark:to-secondary-500/[0.03] border border-primary-100/60 dark:border-primary-500/15">
+          <div className="flex items-center gap-2 mb-2">
+            {/* <Linkedin className="w-4 h-4 text-[#0A66C2]" /> */}
+            <h4 className="text-sm font-bold text-primary-800 dark:text-primary-300">LinkedIn Post Composer</h4>
+            {filledTemplate && (
+              <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border ${postText.length > 3000 ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400' : 'bg-white/70 dark:bg-white/[0.06] border-primary-100 dark:border-white/10 text-slate-500 dark:text-white/40'}`}>
+                {postText.length}/3000
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-500 dark:text-white/40 mb-3 leading-relaxed">
+            {filledTemplate
+              ? 'A ready-made post based on your role and duration is pre-filled below. You can edit it to add personal touches, then copy it to LinkedIn and submit the public post link in this task.'
+              : 'Write your LinkedIn post below, share it publicly on LinkedIn, then paste the post link to submit.'}
+          </p>
+
+          {/* Editable post text */}
+          <textarea
+            value={postText}
+            onChange={e => setPostText(e.target.value)}
+            rows={filledTemplate ? Math.min(12, Math.max(6, postText.split('\n').length + 2)) : 6}
+            placeholder="Write your LinkedIn post here..."
+            className="w-full p-3 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] text-xs text-slate-700 dark:text-white/65 leading-relaxed resize-y focus:outline-none focus:border-primary-500/40 focus:ring-2 focus:ring-primary-500/10 transition-all"
+          />
+
+          {/* Actions */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <button
+              type="button"
+              onClick={handleCopyPost}
+              disabled={!postText.trim()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/[0.1] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {templateCopied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {templateCopied ? 'Copied!' : 'Copy Post'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCopyAndOpenLinkedIn}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#0A66C2] text-white hover:bg-[#004182] transition-all shadow-md shadow-[#0A66C2]/20"
+            >
+              {/* <Linkedin className="w-3.5 h-3.5" /> */}
+              Copy & Open LinkedIn
+            </button>
+            {filledTemplate && postText !== filledTemplate && (
+              <button
+                type="button"
+                onClick={() => setPostText(filledTemplate)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-slate-500 dark:text-white/50 hover:bg-slate-50 dark:hover:bg-white/[0.1] transition-all"
+              >
+                Reset Template
+              </button>
+            )}
+          </div>
+
+          {/* How to post */}
+          <div className="mt-4 p-3 rounded-xl bg-white/60 dark:bg-white/[0.03] border border-primary-100/50 dark:border-white/[0.05]">
+            <p className="text-[11px] font-bold text-slate-700 dark:text-white/60 mb-2">How to post</p>
+            <ul className="space-y-1.5">
+              {[
+                'Copy the post text above',
+                'Open LinkedIn and paste it into the post composer',
+                'Optionally attach your offer letter PDF — download it from the Offer Letter page',
+                'Publish the post publicly, then use "Copy link to post"',
+                'Paste that link in this task and submit',
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-2 text-[11px] text-slate-500 dark:text-white/40 leading-relaxed">
+                  <span className="mt-0.5 shrink-0 w-4 h-4 rounded-md bg-primary-50 dark:bg-primary-500/[0.08] flex items-center justify-center text-[9px] font-extrabold text-primary-600 dark:text-primary-400">{i + 1}</span>
+                  <span>
+                    {step.includes('Offer Letter page') ? (
+                      <>Optionally attach your offer letter PDF — download it from the{' '}
+                        <Link to="/offer-letters" className="text-primary-600 dark:text-primary-400 font-bold hover:underline">Offer Letter page</Link>
+                      </>
+                    ) : step}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+       )} 
+
+      {/* Submitted GitHub Link / LinkedIn Post */}
+      {isSubmitted && (detail.githubLink || detail.linkedinPostURL) && (
         <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <GitPullRequest className="w-4 h-4 text-slate-400" />
-            <h4 className="text-sm font-bold text-slate-700 dark:text-white/70">Submitted Repository</h4>
+            <h4 className="text-sm font-bold text-slate-700 dark:text-white/70">{taskType === 'linkedin' ? 'Submitted LinkedIn Post' : 'Submitted Repository'}</h4>
           </div>
-          <a href={detail.githubLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium break-all">
-            {detail.githubLink}
+          <a href={detail.linkedinPostURL || detail.githubLink} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium break-all">
+            {detail.linkedinPostURL || detail.githubLink}
           </a>
         </div>
       )}
@@ -321,7 +445,7 @@ function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit }) {
             className="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-600 text-white text-sm font-bold shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30 transition-all duration-300"
           >
             <Send className="w-4 h-4" />
-            Submit Task #{taskNumber}
+            {taskType === 'linkedin' ? 'Submit LinkedIn Post' : `Submit Task #${taskNumber}`}
           </motion.button>
         </div>
       )}
@@ -341,9 +465,10 @@ function TaskDetailPanel({ detail, taskNumber, reviewStatus, onSubmit }) {
 }
 
 /* ── Task Card (Stepper Style) ── */
-function TaskCard({ task, index, isLocked, isActive, isExpanded, onToggle, onSubmit, taskDetail, submitting }) {
+function TaskCard({ task, displayNumber, index, isLocked, isActive, isExpanded, onToggle, onSubmit, taskDetail, submitting, taskType = 'github' }) {
   const st = statusConfig[task.reviewStatus] || statusConfig.NOT_SUBMITTED;
   const StatusIcon = st.icon;
+  const shownNumber = displayNumber ?? task.taskNumber;
 
   return (
     <motion.div
@@ -375,7 +500,7 @@ function TaskCard({ task, index, isLocked, isActive, isExpanded, onToggle, onSub
             <Lock className="w-4 h-4 text-slate-300 dark:text-white/15" />
           ) : (
             <span className={`text-sm font-extrabold ${statusConfig[task.reviewStatus]?.color || 'text-slate-500 dark:text-white/50'}`}>
-              {task.taskNumber}
+              {shownNumber}
             </span>
           )}
         </div>
@@ -386,7 +511,7 @@ function TaskCard({ task, index, isLocked, isActive, isExpanded, onToggle, onSub
             {task.title}
           </h4>
           <p className="text-[11px] text-slate-400 dark:text-white/30 mt-0.5">
-            {isLocked ? 'Complete previous tasks first' : `Task ${task.taskNumber}`}
+            {isLocked ? (task.taskNumber >= 100 ? 'Complete certificate payment to unlock' : 'Complete previous tasks first') : `Task ${shownNumber}`}
           </p>
         </div>
 
@@ -423,6 +548,7 @@ function TaskCard({ task, index, isLocked, isActive, isExpanded, onToggle, onSub
                 reviewStatus={task.reviewStatus}
                 onSubmit={onSubmit}
                 submitting={submitting}
+                taskType={taskType}
               />
             </div>
           </motion.div>
@@ -476,6 +602,7 @@ export default function InternshipDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedTask, setExpandedTask] = useState(null);
   const [taskDetails, setTaskDetails] = useState({});
+  const [paymentDone, setPaymentDone] = useState(false);
   const TASKS_PER_PAGE = 5;
 
   /* ── Fetch tasks status ── */
@@ -504,6 +631,22 @@ export default function InternshipDetailPage() {
     }
   }, [isAuthenticated, fetchTasks]);
 
+  /* ── Readiness (LinkedIn) task helpers ── */
+  const isReadinessTaskNumber = (taskNumber) => taskNumber === 0 || taskNumber >= 100;
+  const getDisplayNumber = (taskNumber) => (taskNumber >= 100 ? tasks.length - 1 : taskNumber);
+
+  /* ── Check certificate payment status (gates the final task) ── */
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+    api.getCertificate(roleId, duration).then(data => {
+      if (cancelled) return;
+      const status = data?.PaymentStatus ?? data?.payment_status ?? data?.certificate?.PaymentStatus ?? data?.certificate?.payment_status ?? '';
+      setPaymentDone(String(status).toLowerCase() === 'payed');
+    }).catch(() => { if (!cancelled) setPaymentDone(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, roleId, duration]);
+
   /* ── Fetch role name fallback ── */
   useEffect(() => {
     if (roleName === roleId || !roleName) {
@@ -515,21 +658,43 @@ export default function InternshipDetailPage() {
     }
   }, [roleId, roleName]);
 
-  /* ── Fetch task detail from /tasks API when expanding ── */
+  /* ── Fetch task detail (merges tasks-status raw data + /tasks API) ── */
   const fetchTaskDetail = useCallback(async (taskNumber) => {
     if (taskDetails[taskNumber]) return;
-    try {
-      const data = await api.getTasks(roleId, duration);
-      const raw = data.tasks ?? extractList(data, 'tasks', 'data', 'result');
-      const task = raw.find(t => (t.TaskNumber ?? t.task_number) === taskNumber);
-      if (task) {
-        setTaskDetails(prev => ({ ...prev, [taskNumber]: normalizeTaskDetail(task) }));
+    // Merge sources so fields present in only one response (e.g. LinkedInPostTemplate) still show
+    const mergeSources = (sources) => {
+      const merged = {};
+      for (const src of sources) {
+        if (!src) continue;
+        for (const [k, v] of Object.entries(src)) {
+          if (v === undefined || v === null || v === '') continue;
+          if (Array.isArray(v) && v.length === 0) continue;
+          merged[k] = v;
+        }
       }
+      return merged;
+    };
+    try {
+      // 1) Full task object already returned by tasks-status (may include Objective, LinkedInPostTemplate, ...)
+      const statusRaw = tasks.find(t => t.taskNumber === taskNumber)?.raw ?? null;
+      // 2) Full task definition from /tasks
+      let tasksRaw = null;
+      try {
+        const data = await api.getTasks(roleId, duration);
+        const raw = data.tasks ?? extractList(data, 'tasks', 'data', 'result');
+        tasksRaw = raw.find(t => (t.TaskNumber ?? t.task_number) === taskNumber) ?? null;
+      } catch { /* keep statusRaw as fallback */ }
+      const merged = mergeSources([statusRaw, tasksRaw]);
+      // Always set a detail (even minimal) so the panel never hangs on "Loading..."
+      setTaskDetails(prev => ({
+        ...prev,
+        [taskNumber]: normalizeTaskDetail(Object.keys(merged).length > 0 ? merged : { TaskNumber: taskNumber, RoleID: roleId, Duration: duration }),
+      }));
     } catch (err) {
       console.error('Failed to fetch task detail:', err);
       toast.error('Failed to load task details');
     }
-  }, [roleId, duration, taskDetails]);
+  }, [roleId, duration, taskDetails, tasks]);
 
   /* ── Toggle expand ── */
   const handleToggle = useCallback((taskNumber) => {
@@ -542,10 +707,32 @@ export default function InternshipDetailPage() {
 
   /* ── Submit task ── */
   const handleSubmitTask = async () => {
-    if (!githubLink.trim()) { toast.warning('Please enter a GitHub link'); return; }
+    const link = githubLink.trim();
+    const taskObj = tasks.find(t => t.taskNumber === submitModal);
+    if (taskObj && isReadinessTaskNumber(taskObj.taskNumber)) {
+      // Optional LinkedIn readiness task (Task 0 / final task)
+      if (!/linkedin\.com\/(feed\/update\/|posts\/)/.test(link)) {
+        toast.warning("Please enter a public LinkedIn post URL like 'https://www.linkedin.com/feed/update/urn:li:share:...' (use 'Copy link to post' on LinkedIn)");
+        return;
+      }
+      setSubmitting(true);
+      try {
+        await api.submitReadinessTask(link, roleId, duration, taskObj.taskNumber >= 100 ? 'final' : 'task0');
+        toast.success('LinkedIn post submitted! It will be reviewed shortly.');
+        setSubmitModal(null);
+        setGithubLink('');
+        await fetchTasks();
+      } catch (err) {
+        toast.error(err.message || 'Submission failed');
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+    if (!link) { toast.warning('Please enter a GitHub link'); return; }
     setSubmitting(true);
     try {
-      await api.submitTask(githubLink.trim(), roleId, duration, submitModal);
+      await api.submitTask(link, roleId, duration, submitModal);
       toast.success('Task submitted! It will be reviewed shortly.');
       setSubmitModal(null);
       setGithubLink('');
@@ -560,10 +747,16 @@ export default function InternshipDetailPage() {
 
   /* ── Determine if a task is locked ── */
   const isTaskLocked = (task) => {
-    if (task.reviewStatus === 'APPROVED' || task.reviewStatus === 'PENDING' || task.reviewStatus === 'REVIEWING') return false;
-    const prevTask = tasks.find(t => t.taskNumber === task.taskNumber - 1);
-    if (!prevTask) return false;
-    return prevTask.reviewStatus === 'NOT_SUBMITTED';
+    if (task.reviewStatus !== 'NOT_SUBMITTED') return false;
+    // Final readiness task: locked until certificate payment is done
+    if (task.taskNumber >= 100) return !paymentDone;
+    // Task 0 (optional LinkedIn readiness task): always open
+    if (task.taskNumber === 0) return false;
+    // Regular (non-post) tasks unlock sequentially; the first one is always open
+    const regularTasks = tasks.filter(t => t.taskNumber !== 0 && t.taskNumber < 100);
+    const idx = regularTasks.findIndex(t => t.taskNumber === task.taskNumber);
+    if (idx <= 0) return false;
+    return regularTasks[idx - 1].reviewStatus === 'NOT_SUBMITTED';
   };
 
   /* ── Find first unlocked + not submitted task ── */
@@ -583,8 +776,9 @@ export default function InternshipDetailPage() {
   /* ── Pagination ── */
   const totalPages = Math.ceil(tasks.length / TASKS_PER_PAGE);
 
-  const percent = summary?.percent_approved ?? (tasks.length > 0 ? Math.round((tasks.filter(t => t.reviewStatus === 'APPROVED').length / tasks.length) * 100) : 0);
-  const allApproved = summary?.all_approved ?? (tasks.length > 0 && tasks.every(t => t.reviewStatus === 'APPROVED'));
+  const regularTasks = tasks.filter(t => !isReadinessTaskNumber(t.taskNumber));
+  const percent = summary?.percent_approved ?? (regularTasks.length > 0 ? Math.round((regularTasks.filter(t => t.reviewStatus === 'APPROVED').length / regularTasks.length) * 100) : 0);
+  const allApproved = summary?.all_approved ?? (regularTasks.length > 0 && regularTasks.every(t => t.reviewStatus === 'APPROVED'));
 
   return (
     <div className="py-10 bg-white dark:bg-black min-h-screen">
@@ -713,6 +907,7 @@ export default function InternshipDetailPage() {
                 <div key={task.taskNumber} className="flex items-center">
                   <StepCircle
                     taskNumber={task.taskNumber}
+                    displayNumber={getDisplayNumber(task.taskNumber)}
                     status={task.reviewStatus}
                     isLocked={isTaskLocked(task)}
                     isActive={expandedTask === task.taskNumber}
@@ -746,6 +941,7 @@ export default function InternshipDetailPage() {
               <TaskCard
                 key={task.taskNumber}
                 task={task}
+                displayNumber={getDisplayNumber(task.taskNumber)}
                 index={i}
                 isLocked={isTaskLocked(task)}
                 isActive={activeTask?.taskNumber === task.taskNumber}
@@ -754,6 +950,7 @@ export default function InternshipDetailPage() {
                 onSubmit={(num) => setSubmitModal(num)}
                 taskDetail={taskDetails[task.taskNumber] || null}
                 submitting={submitting && submitModal === task.taskNumber}
+                taskType={isReadinessTaskNumber(task.taskNumber) ? 'linkedin' : 'github'}
               />
             ))}
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(p) => { setCurrentPage(p); setExpandedTask(null); }} />
@@ -770,7 +967,10 @@ export default function InternshipDetailPage() {
 
         {/* ── Submit Modal ── */}
         <AnimatePresence>
-          {submitModal !== null && (
+          {submitModal !== null && (() => {
+            const submitTaskObj = tasks.find(t => t.taskNumber === submitModal);
+            const submitIsReadiness = !!submitTaskObj && isReadinessTaskNumber(submitTaskObj.taskNumber);
+            return (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -793,8 +993,8 @@ export default function InternshipDetailPage() {
                         <Send className="w-5 h-5 text-primary-500 dark:text-primary-400" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Submit Task</h3>
-                        <p className="text-xs text-slate-400 dark:text-white/30">Task #{submitModal}</p>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{submitIsReadiness ? 'Submit LinkedIn Post' : 'Submit Task'}</h3>
+                        <p className="text-xs text-slate-400 dark:text-white/30">Task #{submitTaskObj ? getDisplayNumber(submitModal) : submitModal}</p>
                       </div>
                     </div>
                     <button onClick={() => { setSubmitModal(null); setGithubLink(''); }} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors">
@@ -805,13 +1005,17 @@ export default function InternshipDetailPage() {
 
                 <div className="px-6 pb-6">
                   <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.04] mb-4">
-                    <p className="text-xs text-slate-500 dark:text-white/35 mb-1 font-medium">Paste your GitHub repository link below. The link should point to a public repository with your completed task.</p>
+                    <p className="text-xs text-slate-500 dark:text-white/35 mb-1 font-medium">
+                      {submitIsReadiness
+                        ? "Share your experience with NexoraMind on LinkedIn as a public post, then paste the post link below. Use 'Copy link to post' on LinkedIn."
+                        : 'Paste your GitHub repository link below. The link should point to a public repository with your completed task.'}
+                    </p>
                   </div>
 
-                  <label className="block text-sm font-bold text-slate-700 dark:text-white/70 mb-2">GitHub Repository Link</label>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-white/70 mb-2">{submitIsReadiness ? 'LinkedIn Post Link' : 'GitHub Repository Link'}</label>
                   <input
                     type="url"
-                    placeholder="https://github.com/username/repo"
+                    placeholder={submitIsReadiness ? 'https://www.linkedin.com/feed/update/urn:li:share:...' : 'https://github.com/username/repo'}
                     value={githubLink}
                     onChange={e => setGithubLink(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-primary-500/40 focus:ring-2 focus:ring-primary-500/10 transition-all mb-5"
@@ -833,13 +1037,14 @@ export default function InternshipDetailPage() {
                       className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-sm font-bold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-500/20"
                     >
                       {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                      {submitting ? 'Submitting...' : 'Submit'}
+                      {submitting ? 'Submitting...' : submitIsReadiness ? 'Submit Post' : 'Submit'}
                     </motion.button>
                   </div>
                 </div>
               </motion.div>
             </motion.div>
-          )}
+            );
+          })()}
         </AnimatePresence>
       </div>
     </div>

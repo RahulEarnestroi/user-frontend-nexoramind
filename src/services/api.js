@@ -113,6 +113,13 @@ export const api = {
       body: JSON.stringify({ GitHubLink: githubLink, RoleID: roleId, Duration: duration, TaskNumber: taskNumber }),
     }),
 
+  // Optional LinkedIn readiness tasks (Task 0 and final task)
+  submitReadinessTask: (linkedinPostURL, roleId, duration, taskType) =>
+    request('/nm/internship/submit-readiness-task', {
+      method: 'POST',
+      body: JSON.stringify({ LinkedInPostURL: linkedinPostURL, RoleID: roleId, Duration: duration, TaskType: taskType }),
+    }),
+
   // ─── Tasks Status ─────────────────────────────────
   getTasksStatus: (roleId, duration) =>
     request(`/nm/internship/tasks-status?RoleID=${encodeURIComponent(roleId)}&Duration=${encodeURIComponent(duration)}`),
