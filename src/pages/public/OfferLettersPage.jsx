@@ -561,7 +561,7 @@ export default function OfferLettersPage() {
                   </div>
                 </button>
 
-                <button onClick={() => { handleDownloadPDF(downloadModal); setDownloadModal(null); }} disabled={!!downloading}
+                {/* <button onClick={() => { handleDownloadPDF(downloadModal); setDownloadModal(null); }} disabled={!!downloading}
                   className="w-full flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-red-300 dark:hover:border-red-500/20 hover:bg-red-50/50 dark:hover:bg-red-500/[0.04] transition-all group disabled:opacity-50 text-left">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center shadow-sm shadow-red-500/20 shrink-0">
                     <FileDown className="w-5 h-5 text-white" />
@@ -570,7 +570,7 @@ export default function OfferLettersPage() {
                     <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Download as PDF</p>
                     <p className="text-[11px] text-slate-400 dark:text-white/25 mt-0.5">Print-ready document</p>
                   </div>
-                </button>
+                </button> */}
 
                 <button onClick={() => { handleDownloadPrint(downloadModal); setDownloadModal(null); }} disabled={!!downloading}
                   className="w-full flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-primary-300 dark:hover:border-primary-500/20 hover:bg-primary-50/50 dark:hover:bg-primary-500/[0.04] transition-all group disabled:opacity-50 text-left">
