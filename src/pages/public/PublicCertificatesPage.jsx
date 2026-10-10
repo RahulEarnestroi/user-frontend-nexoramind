@@ -249,16 +249,7 @@ export default function PublicCertificatesPage() {
     } catch (err) { toast.error(err.message || 'Failed to prepare certificate'); }
   }, []);
 
-  const handleCopyUpi = async () => {
-    try {
-      await navigator.clipboard.writeText(UPI_ID);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-      toast.success('UPI ID copied!');
-    } catch (_) {
-      toast.error('Could not copy — paste manually');
-    }
-  };
+ 
 
   const openUnlockModal = (cert) => {
     setUnlockModal({ cert, step: 'qr' });

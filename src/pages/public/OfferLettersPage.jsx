@@ -57,8 +57,57 @@ async function prepareHtml(rawHtml) {
   if (!html.includes('fonts.googleapis.com')) {
     const fontLink = `<link rel="preconnect" href="https://fonts.googleapis.com" />\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\n<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet" />`;
     html = html.replace('</head>', `${fontLink}\n</head>`);
+  } else if (!html.includes('Great+Vibes')) {
+    // Existing fonts link lacks the cursive name font — add it, or the name falls back
+    // to a different family (different metrics → overlapping lines in the capture)
+    html = html.replace('</head>', `<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />\n</head>`);
   }
-  return html;
+  return applySimpleNameStyle(html);
+}
+
+/* Recipient name: replace the cursive "Great Vibes" 40px style with a simple font
+   and give the line real box height (auto/overflow-visible) so it can never paint
+   over the "Offered Role" line below it. */
+const NAME_STYLE_OVERRIDE = `<style id="nm-name-override">
+  .recipient-block .name {
+    font-family: "DM Sans", Arial, Helvetica, sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin: 6px 0 10px 0 !important;
+    padding: 0 !important;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+  .recipient-block { overflow: visible !important; }
+</style>`;
+
+function applySimpleNameStyle(html) {
+  if (!html || html.includes('nm-name-override')) return html;
+  return html.replace('</head>', `${NAME_STYLE_OVERRIDE}\n</head>`);
+}
+
+/* Wait until the iframe's webfonts (esp. "Great Vibes" for the recipient name) are
+   fully loaded before capturing — otherwise html2canvas measures text with a fallback
+   font, which breaks line wrapping and overlaps the lines below. */
+function waitForFonts(doc, families = ['Great Vibes', 'DM Sans', 'Playfair Display'], timeout = 4000) {
+  const start = Date.now();
+  const isReady = () => families.every(f => {
+    try { return doc.fonts.check(`40px "${f}"`, 'AaBb'); } catch { return false; }
+  });
+  const attempt = async () => {
+    try {
+      await Promise.all(families.map(f => doc.fonts.load(`40px "${f}"`, 'AaBbCc')));
+      await doc.fonts.ready;
+    } catch { /* ignore — fall through to check */ }
+    if (isReady() || Date.now() - start >= timeout) return;
+    await new Promise(r => setTimeout(r, 200));
+    return attempt();
+  };
+  return attempt();
 }
 
 function renderInContainer(html, id = 'offer-letter-renderer') {
@@ -83,10 +132,11 @@ function renderInContainer(html, id = 'offer-letter-renderer') {
 
     const checkReady = () => {
       try {
-        if (iframe.contentDocument && iframe.contentDocument.fonts) {
-          iframe.contentDocument.fonts.ready.then(() => {
-            setTimeout(() => resolve({ container, iframe }), 600);
-          });
+        const doc = iframe.contentDocument;
+        if (doc && doc.fonts) {
+          // Poll until webfonts (Great Vibes name, body fonts) are actually loaded,
+          // not just when the stylesheet finishes — html2canvas must measure with the real font
+          waitForFonts(doc).then(() => resolve({ container, iframe }));
         } else {
           setTimeout(() => resolve({ container, iframe }), 1000);
         }
@@ -143,7 +193,7 @@ export default function OfferLettersPage() {
     try {
       const data = await api.getOfferLetter(ol.roleId, ol.duration);
       const html = data.RenderedHTML ?? data.renderedHTML ?? data.rendered_html ?? data.html ?? '';
-      setRenderedHtml(html);
+      setRenderedHtml(applySimpleNameStyle(html));
     } catch (err) {
       toast.error(err.message || 'Failed to load offer letter');
       setViewing(null);
