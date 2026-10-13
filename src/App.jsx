@@ -46,7 +46,7 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           {/* <Route path="/" element={<LandingPage />} /> */}
-          <Route path="/about" element={<AboutPage />} />
+         
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           {/* <Route path="/verify" element={<VerifyPage />} /> */}
@@ -64,6 +64,7 @@ export default function App() {
               <Route path="/offer-letters" element={<OfferLettersPage />} />
               <Route path="/certificates-list" element={<PublicCertificatesPage />} />
               <Route path="/account/settings" element={<AccountSettingsPage />} />
+               <Route path="/about" element={<AboutPage />} />
             </Route>
           </Route>
 
